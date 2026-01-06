@@ -86,7 +86,7 @@ export default function AboutPage() {
                     src={teamImage.imageUrl}
                     alt={teamImage.description}
                     width={1080}
-                    height={720}
+                    height={1080}
                     className="rounded-lg object-cover w-full"
                     data-ai-hint={teamImage.imageHint}
                 />
