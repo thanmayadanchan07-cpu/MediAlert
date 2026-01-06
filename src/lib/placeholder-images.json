@@ -15,7 +15,7 @@
     {
       "id": "reminder-feature",
       "description": "An alarm clock next to a bottle of pills, symbolizing a medicine reminder.",
-      "imageUrl": "https://images.unsplash.com/photo-1562993233-4a1f6a1523af?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtZWRpY2luZSUyMHJlbWluZGVyfGVufDB8fHx8MTcyMjMyNTI0Nnww&ixlib=rb-4.1.0&q=80&w=600",
+      "imageUrl": "https://images.unsplash.com/photo-1562993233-4a1f6a1523af?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtZWRpY2luZSUyMHJlbWluZGVyfGVufDB8fHx8MTcyMjMyNTI0Nnww&ixlib.rb-4.1.0&q=80&w=600",
       "imageHint": "medicine reminder"
     },
     {
