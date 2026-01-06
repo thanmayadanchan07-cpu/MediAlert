@@ -3,8 +3,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useUser, useFirestore } from '@/firebase';
-import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { useUser, useFirestore, addDocumentNonBlocking } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -85,9 +84,9 @@ export default function AboutPage() {
                 <Image
                     src={teamImage.imageUrl}
                     alt={teamImage.description}
-                    width={550}
-                    height={1194}
-                    className="rounded-lg object-cover w-full h-auto max-w-[300px] mx-auto"
+                    width={800}
+                    height={600}
+                    className="rounded-lg object-cover w-full h-auto"
                     data-ai-hint={teamImage.imageHint}
                 />
             )}
