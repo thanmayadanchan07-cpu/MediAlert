@@ -56,8 +56,8 @@ export default function Header() {
   return (
     <header className="bg-white shadow-sm sticky top-0 z-40">
       <div className="container mx-auto flex h-20 items-center justify-between px-4">
-        <Link href="/" className="flex items-center gap-2 font-headline text-2xl font-extrabold text-primary">
-          <Pill className="h-7 w-7" />
+        <Link href="/" className="flex items-center gap-2 font-headline text-3xl font-extrabold text-primary">
+          <Pill className="h-8 w-8" />
           MediAlert
         </Link>
         <nav className="hidden md:flex items-center space-x-6">
