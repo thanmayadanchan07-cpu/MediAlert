@@ -14,9 +14,9 @@
     },
     {
       "id": "reminder-feature",
-      "description": "A classic alarm clock rings next to a bottle of pills, symbolizing the importance of timely medication reminders.",
-      "imageUrl": "https://images.unsplash.com/photo-1562993233-4a1f6a1523af?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtZWRpY2luZSUyMHJlbWluZGVyfGVufDB8fHx8MTcyMjI4MjAwNnww&ixlib=rb-4.1.0&q=80&w=600",
-      "imageHint": "medicine reminder"
+      "description": "A modern smartwatch on a wrist, symbolizing a wearable reminder for medication.",
+      "imageUrl": "https://images.unsplash.com/photo-1544132166-252c5a86de03?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzbWFydCUyMHdhdGNofGVufDB8fHx8MTcyNDI2NjY0NHww&ixlib=rb-4.1.0&q=80&w=600",
+      "imageHint": "smart watch"
     },
     {
       "id": "refill-feature",
@@ -32,9 +32,9 @@
     },
     {
       "id": "about-team",
-      "description": "A diverse team of smiling healthcare professionals stands together, representing a friendly and inclusive approach to medical care.",
-      "imageUrl": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxoZWFsdGhjYXJlJTIwdGVhbXxlbnwwfHx8fDE3MjIzODk2NTh8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "healthcare team"
+      "description": "A group of diverse people of all ages with a doctor at the center.",
+      "imageUrl": "https://images.unsplash.com/photo-1532635241-17e820acc59f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxncm91cCUyMGRpdmVyc2UlMjBwZW9wbGV8ZW58MHx8fHwxNzI0MjY2MDI0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "diverse group"
     },
     {
       "id": "about-medications",
