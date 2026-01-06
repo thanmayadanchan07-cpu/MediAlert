@@ -33,8 +33,14 @@
     {
       "id": "about-medications",
       "description": "A collection of various medications including pills, capsules, and syrups, representing comprehensive medication management.",
-      "imageUrl": "https://images.unsplash.com/photo-1628771065518-0d82f1938462?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx2YXJpb3VzJTIwbWVkaWNhdGlvbnN8ZW58MHx8fHwxNzIxODc0NzM0fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "various medications"
+      "imageUrl": "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtZWRpY2F0aW9ufGVufDB8fHx8MTcyMjI4MjAwNnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "pills tablets"
+    },
+    {
+      "id": "about-reminder",
+      "description": "An alarm clock next to a bottle of pills, symbolizing a medicine reminder.",
+      "imageUrl": "https://images.unsplash.com/photo-1562993233-4a1f6a1523af?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtZWRpY2luZSUyMHJlbWluZGVyfGVufDB8fHx8MTcyMjMyNTI0Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "medicine reminder"
     },
     {
       "id": "dosage-illustration",
