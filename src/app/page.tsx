@@ -1,3 +1,123 @@
+'use client';
+
+import Image from 'next/image';
+import { useAuth } from '@/context/AuthContext';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Clock, Box, Pill, Cloud } from 'lucide-react';
+import LoginForm from '@/components/LoginForm';
+
+const features = [
+  {
+    icon: <Clock className="w-8 h-8 text-primary" />,
+    title: 'Medicine Reminders',
+    description: 'Set custom reminders and never miss a dose again.',
+  },
+  {
+    icon: <Box className="w-8 h-8 text-primary" />,
+    title: 'Smart Refill',
+    description: 'Track your medicine stock and get timely refill alerts.',
+  },
+  {
+    icon: <Pill className="w-8 h-8 text-primary" />,
+    title: 'Dosage Tracking',
+    description: 'Easily log your dosage and keep a history of your intake.',
+  },
+  {
+    icon: <Cloud className="w-8 h-8 text-primary" />,
+    title: 'Cloud Backup',
+    description: 'Your data is securely backed up and accessible only by you.',
+  },
+];
+
+const homeIllustration = PlaceHolderImages.find(img => img.id === 'home-illustration');
+
 export default function Home() {
-  return <></>;
+  const { user, loading } = useAuth();
+
+  const WelcomeSection = () => (
+    <div className="text-center">
+      <h2 className="font-headline text-3xl md:text-4xl font-extrabold tracking-tight">
+        Welcome back!
+      </h2>
+      <p className="mt-4 text-lg text-muted-foreground font-body">
+        You're all set. Manage your health with ease.
+      </p>
+    </div>
+  );
+
+  return (
+    <div className="space-y-16 md:space-y-24">
+      <section className="text-center pt-8">
+        <h1 className="font-headline text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tighter text-primary">
+          MediAlert
+        </h1>
+        <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-foreground/80 font-body">
+          Never miss a dose, never run out of medicines.
+        </p>
+      </section>
+
+      <section>
+        <Card className="overflow-hidden shadow-lg border-none bg-card">
+          <CardContent className="p-0">
+            <div className="grid md:grid-cols-2 items-center">
+              <div className="p-8 md:p-12 order-2 md:order-1">
+                {loading ? (
+                  <div className="space-y-4 max-w-sm mx-auto">
+                    <Skeleton className="h-10 w-3/4" />
+                    <Skeleton className="h-6 w-full" />
+                    <Skeleton className="h-12 w-full mt-4" />
+                  </div>
+                ) : user ? (
+                  <WelcomeSection />
+                ) : (
+                  <div className="max-w-sm mx-auto">
+                    <h2 className="font-headline text-3xl font-bold mb-2">Get Started</h2>
+                    <p className="text-muted-foreground mb-6 font-body">Log in or sign up to manage your medication.</p>
+                    <LoginForm />
+                  </div>
+                )}
+              </div>
+              <div className="order-1 md:order-2 bg-primary/10">
+                {homeIllustration && (
+                  <Image
+                    src={homeIllustration.imageUrl}
+                    alt={homeIllustration.description}
+                    width={800}
+                    height={600}
+                    className="w-full h-64 md:h-full object-cover"
+                    data-ai-hint={homeIllustration.imageHint}
+                    priority
+                  />
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      <section className="text-center">
+        <h2 className="font-headline text-3xl md:text-4xl font-bold mb-4">Features</h2>
+        <p className="max-w-3xl mx-auto text-lg text-muted-foreground mb-12 font-body">
+          Everything you need for a hassle-free medication management experience.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {features.map((feature) => (
+            <Card key={feature.title} className="text-left bg-white hover:shadow-xl transition-shadow">
+              <CardHeader>
+                <div className="bg-secondary p-3 rounded-lg w-fit mb-4">
+                  {feature.icon}
+                </div>
+                <CardTitle className="font-headline text-xl font-semibold">{feature.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground font-body">{feature.description}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
 }

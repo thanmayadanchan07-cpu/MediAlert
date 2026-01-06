@@ -1,3 +1,64 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "home-illustration",
+      "description": "Friendly medicine reminder illustration, showing pills, alarm clock, smartphone, with pastel-friendly colors, clean white background, welcoming healthcare design, suitable for all ages.",
+      "imageUrl": "https://images.unsplash.com/photo-1634796429173-ec1b64dda0ed?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtZWRpY2luZSUyMHJlbWluZGVyfGVufDB8fHx8MTc2NzcwODk4OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "medicine reminder"
+    },
+    {
+      "id": "dosage-feature",
+      "description": "An icon or image representing dosage tracking.",
+      "imageUrl": "https://images.unsplash.com/photo-1702776102013-1530fcb73add?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwaWxscyUyMGJvdHRsZXxlbnwwfHx8fDE3Njc2NDE0NTJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "pills bottle"
+    },
+    {
+      "id": "reminder-feature",
+      "description": "An icon or image representing smart reminders.",
+      "imageUrl": "https://images.unsplash.com/photo-1588173129725-40a81ac0360d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxhbGFybSUyMGNsb2NrfGVufDB8fHx8MTc2NzYyMTU0Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "alarm clock"
+    },
+    {
+      "id": "refill-feature",
+      "description": "An icon or image representing smart refill.",
+      "imageUrl": "https://images.unsplash.com/photo-1711985220413-50865dc0bb4f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8bWVkaWNpbmUlMjBib3h8ZW58MHx8fHwxNzY3NzA4OTkwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "medicine box"
+    },
+    {
+      "id": "backup-feature",
+      "description": "An icon or image representing cloud backup.",
+      "imageUrl": "https://images.unsplash.com/photo-1710181717510-8e3896937fbd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxjbG91ZCUyMHNlY3VyaXR5fGVufDB8fHx8MTc2NzcwODk5MHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "cloud security"
+    },
+    {
+      "id": "person-1",
+      "description": "Image of a young adult.",
+      "imageUrl": "https://images.unsplash.com/photo-1607529378676-a20456ee2f6b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwZXJzb24lMjBzbWlsaW5nfGVufDB8fHx8MTc2NzcwNTAyN3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person smiling"
+    },
+    {
+      "id": "person-2",
+      "description": "Image of a senior person.",
+      "imageUrl": "https://images.unsplash.com/photo-1586001348188-05bd8063cb7f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxzZW5pb3IlMjBwZXJzb258ZW58MHx8fHwxNzY3NjY3OTEzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "senior person"
+    },
+    {
+      "id": "person-3",
+      "description": "Image of a person from a different ethnicity.",
+      "imageUrl": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8d29tYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3Njc2Nzc2ODR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman portrait"
+    },
+    {
+      "id": "dosage-illustration",
+      "description": "Illustration for the dosage page.",
+      "imageUrl": "https://images.unsplash.com/photo-1631507623095-c710d184498f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtZWRpY2luZSUyMHNjaGVkdWxlfGVufDB8fHx8MTc2NzcwODk5MHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "medicine schedule"
+    },
+    {
+      "id": "reminder-illustration",
+      "description": "Illustration for the reminder page.",
+      "imageUrl": "https://images.unsplash.com/photo-1766159965108-a150941abcaa?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxub3RpZmljYXRpb24lMjBhbGVydHxlbnwwfHx8fDE3Njc3MDg5OTB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "notification alert"
+    }
+  ]
 }
