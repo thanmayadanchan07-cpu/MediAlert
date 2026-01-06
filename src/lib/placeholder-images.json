@@ -31,22 +31,10 @@
       "imageHint": "cloud security"
     },
     {
-      "id": "person-1",
-      "description": "Image of a young adult.",
-      "imageUrl": "https://images.unsplash.com/photo-1607529378676-a20456ee2f6b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwZXJzb24lMjBzbWlsaW5nfGVufDB8fHx8MTc2NzcwNTAyN3ww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "person smiling"
-    },
-    {
-      "id": "person-2",
-      "description": "Image of a senior person.",
-      "imageUrl": "https://images.unsplash.com/photo-1586001348188-05bd8063cb7f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxzZW5pb3IlMjBwZXJzb258ZW58MHx8fHwxNzY3NjY3OTEzfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "senior person"
-    },
-    {
-      "id": "person-3",
-      "description": "Image of a person from a different ethnicity.",
-      "imageUrl": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8d29tYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3Njc2Nzc2ODR8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "woman portrait"
+      "id": "about-team",
+      "description": "A diverse group of people of all ages with a doctor at the center.",
+      "imageUrl": "https://images.unsplash.com/photo-1551884857-4ac918b95a48?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxkb2N0b3IlMjBkaXZlcnNlJTIwZ3JvdXB8ZW58MHx8fHwxNzIxMjI0MDI0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "doctor diverse group"
     },
     {
       "id": "dosage-illustration",

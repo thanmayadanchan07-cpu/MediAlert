@@ -40,7 +40,7 @@ const faqItems = [
   },
 ];
 
-const peopleImages = PlaceHolderImages.filter(img => img.id.startsWith('person-'));
+const teamImage = PlaceHolderImages.find(img => img.id === 'about-team');
 
 export default function AboutPage() {
   const { user } = useUser();
@@ -60,8 +60,9 @@ export default function AboutPage() {
     }
     setIsSubmitting(true);
     try {
+      if (!firestore) throw new Error("Firestore not available");
       const feedbackCollectionRef = collection(firestore, 'users', user.uid, 'feedback');
-      addDocumentNonBlocking(feedbackCollectionRef, { email: user.email, message: values.message, userId: user.uid, timestamp: new Date().toISOString() });
+      addDocumentNonBlocking(feedbackCollectionRef, { userId: user.uid, email: user.email, message: values.message, timestamp: new Date().toISOString() });
       toast({ title: 'Feedback Sent!', description: "Thank you for helping us improve." });
       form.reset();
     } catch (error) {
@@ -78,18 +79,17 @@ export default function AboutPage() {
         <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
           We are committed to making medication management simple, accessible, and stress-free for everyone, everywhere.
         </p>
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
-            {peopleImages.map(image => (
+        <div className="mt-8 max-w-4xl mx-auto">
+            {teamImage && (
                 <Image
-                    key={image.id}
-                    src={image.imageUrl}
-                    alt={image.description}
-                    width={300}
-                    height={300}
-                    className="rounded-lg object-cover aspect-square"
-                    data-ai-hint={image.imageHint}
+                    src={teamImage.imageUrl}
+                    alt={teamImage.description}
+                    width={1080}
+                    height={720}
+                    className="rounded-lg object-cover w-full"
+                    data-ai-hint={teamImage.imageHint}
                 />
-            ))}
+            )}
         </div>
       </section>
 
