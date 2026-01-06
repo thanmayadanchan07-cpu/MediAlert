@@ -7,32 +7,29 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Skeleton } from '@/components/ui/skeleton';
 import LoginForm from '@/components/LoginForm';
+import { BellRing, PackagePlus, ShieldCheck, ListPlus } from 'lucide-react';
+import React from 'react';
 
 const homeIllustration = PlaceHolderImages.find(img => img.id === 'home-illustration');
-const reminderFeatureImage = PlaceHolderImages.find(img => img.id === 'reminder-feature');
-const refillFeatureImage = PlaceHolderImages.find(img => img.id === 'refill-feature');
-const dosageFeatureImage = PlaceHolderImages.find(img => img.id === 'dosage-feature');
-const backupFeatureImage = PlaceHolderImages.find(img => img.id === 'backup-feature');
-
 
 const features = [
   {
-    image: reminderFeatureImage,
+    icon: BellRing,
     title: 'Medicine Reminders',
     description: 'Set custom reminders and never miss a dose again.',
   },
   {
-    image: refillFeatureImage,
+    icon: PackagePlus,
     title: 'Smart Refill',
     description: 'Track your medicine stock and get timely refill alerts.',
   },
   {
-    image: dosageFeatureImage,
+    icon: ListPlus,
     title: 'Dosage Tracking',
     description: 'Easily log your dosage and keep a history of your intake.',
   },
   {
-    image: backupFeatureImage,
+    icon: ShieldCheck,
     title: 'Cloud Backup',
     description: 'Your data is securely backed up and accessible only by you.',
   },
@@ -112,21 +109,14 @@ export default function Home() {
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature) => (
-            <Card key={feature.title} className="text-left bg-white hover:shadow-xl transition-shadow flex flex-col">
-              {feature.image && (
-                <Image
-                  src={feature.image.imageUrl}
-                  alt={feature.image.description}
-                  width={600}
-                  height={400}
-                  className="rounded-t-lg object-cover w-full h-40"
-                  data-ai-hint={feature.image.imageHint}
-                />
-              )}
-              <CardHeader>
+            <Card key={feature.title} className="text-center bg-card hover:shadow-xl transition-shadow flex flex-col items-center p-6">
+              <div className="bg-primary/20 text-primary rounded-full p-4 mb-4">
+                <feature.icon className="w-8 h-8" />
+              </div>
+              <CardHeader className="p-0 mb-2">
                 <CardTitle className="font-headline text-xl font-semibold">{feature.title}</CardTitle>
               </CardHeader>
-              <CardContent className="flex-grow">
+              <CardContent className="p-0 flex-grow">
                 <p className="text-muted-foreground font-body">{feature.description}</p>
               </CardContent>
             </Card>
