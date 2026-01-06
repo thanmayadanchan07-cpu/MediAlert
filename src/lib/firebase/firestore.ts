@@ -45,7 +45,7 @@ export interface Reminder {
     id?: string;
     medicineName: string;
     time: string;
-    type: 'Morning' | 'Afternoon' | 'Night' | 'Custom';
+    type: 'Morning' | 'Afternoon' | 'Night';
 }
 
 export const addReminder = (userId: string, reminder: Omit<Reminder, 'id'>) => {

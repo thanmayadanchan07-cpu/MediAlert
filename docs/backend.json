@@ -72,15 +72,15 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Reminder",
       "type": "object",
-      "description": "Represents a reminder for a specific dosage.",
+      "description": "Represents a reminder for a specific medication.",
       "properties": {
         "id": {
           "type": "string",
           "description": "Unique identifier for the reminder."
         },
-        "dosageId": {
+        "medicineName": {
           "type": "string",
-          "description": "Reference to Dosage. (Relationship: Dosage 1:1 Reminder)"
+          "description": "Name of the medicine for the reminder."
         },
         "time": {
           "type": "string",
@@ -88,12 +88,12 @@
         },
         "type": {
           "type": "string",
-          "description": "Type of reminder (e.g., Morning, Afternoon, Night, Custom)."
+          "description": "Type of reminder (e.g., Morning, Afternoon, Night)."
         }
       },
       "required": [
         "id",
-        "dosageId",
+        "medicineName",
         "time",
         "type"
       ]

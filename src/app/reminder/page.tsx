@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
@@ -9,15 +9,15 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useForm } from 'react-hook-form';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import Image from 'next/image';
 import { addDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase';
 import type { Reminder } from '@/lib/firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
-import { PlusCircle, Bell, Trash2, Loader2, BellRing } from 'lucide-react';
+import { PlusCircle, Bell, Trash2, Loader2, BellRing, Sun, Moon, CloudSun } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import {
   AlertDialog,
@@ -31,13 +31,87 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
+const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+
 const reminderSchema = z.object({
   medicineName: z.string().min(1, 'Medicine name is required.'),
-  time: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Please use HH:MM format (e.g., 09:00).'),
-  type: z.enum(['Morning', 'Afternoon', 'Night', 'Custom']),
+  times: z.array(z.string()).refine((value) => value.length > 0, {
+    message: 'You must select at least one time of day.',
+  }),
+  morningTime: z.string().optional(),
+  afternoonTime: z.string().optional(),
+  nightTime: z.string().optional(),
+}).refine(data => !data.times.includes('Morning') || (data.morningTime && timeRegex.test(data.morningTime)), {
+  message: 'Please enter a valid HH:MM time for Morning.',
+  path: ['morningTime'],
+}).refine(data => !data.times.includes('Afternoon') || (data.afternoonTime && timeRegex.test(data.afternoonTime)), {
+  message: 'Please enter a valid HH:MM time for Afternoon.',
+  path: ['afternoonTime'],
+}).refine(data => !data.times.includes('Night') || (data.nightTime && timeRegex.test(data.nightTime)), {
+  message: 'Please enter a valid HH:MM time for Night.',
+  path: ['nightTime'],
 });
 
+
 const reminderIllustration = PlaceHolderImages.find(img => img.id === 'reminder-illustration');
+const timeOptions = [
+  { id: 'Morning', label: 'Morning', icon: Sun },
+  { id: 'Afternoon', label: 'Afternoon', icon: CloudSun },
+  { id: 'Night', label: 'Night', icon: Moon },
+];
+
+
+function SelectedTimesWatcher({ control }: { control: any }) {
+    const selectedTimes = useWatch({
+        control,
+        name: 'times',
+        defaultValue: []
+    });
+
+    return (
+        <>
+            {selectedTimes.includes('Morning') && (
+                <FormField
+                    control={control}
+                    name="morningTime"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Morning Time (HH:MM)</FormLabel>
+                            <FormControl><Input type="time" {...field} /></FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            )}
+            {selectedTimes.includes('Afternoon') && (
+                <FormField
+                    control={control}
+                    name="afternoonTime"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Afternoon Time (HH:MM)</FormLabel>
+                            <FormControl><Input type="time" {...field} /></FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            )}
+            {selectedTimes.includes('Night') && (
+                <FormField
+                    control={control}
+                    name="nightTime"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Night Time (HH:MM)</FormLabel>
+                            <FormControl><Input type="time" {...field} /></FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            )}
+        </>
+    );
+}
 
 export default function ReminderPage() {
   const { user, isUserLoading } = useUser();
@@ -54,7 +128,7 @@ export default function ReminderPage() {
 
   const form = useForm<z.infer<typeof reminderSchema>>({
     resolver: zodResolver(reminderSchema),
-    defaultValues: { medicineName: '', time: '', type: 'Morning' },
+    defaultValues: { medicineName: '', times: [], morningTime: '', afternoonTime: '', nightTime: '' },
   });
 
   const onSubmit = async (values: z.infer<typeof reminderSchema>) => {
@@ -64,13 +138,25 @@ export default function ReminderPage() {
     }
     setIsSubmitting(true);
     const collectionRef = collection(firestore, 'users', user.uid, 'reminders');
+    
+    const remindersToSave: Omit<Reminder, 'id'>[] = [];
+    if (values.times.includes('Morning') && values.morningTime) {
+        remindersToSave.push({ medicineName: values.medicineName, type: 'Morning', time: values.morningTime });
+    }
+    if (values.times.includes('Afternoon') && values.afternoonTime) {
+        remindersToSave.push({ medicineName: values.medicineName, type: 'Afternoon', time: values.afternoonTime });
+    }
+    if (values.times.includes('Night') && values.nightTime) {
+        remindersToSave.push({ medicineName: values.medicineName, type: 'Night', time: values.nightTime });
+    }
+
     try {
-      addDocumentNonBlocking(collectionRef, values as Omit<Reminder, 'id'>);
-      toast({ title: 'Success', description: 'New reminder set.' });
+      await Promise.all(remindersToSave.map(reminder => addDocumentNonBlocking(collectionRef, reminder)));
+      toast({ title: 'Success', description: 'New reminder(s) set.' });
       setIsDialogOpen(false);
       form.reset();
     } catch (error) {
-      toast({ title: 'Error', description: 'Could not save the reminder.', variant: 'destructive' });
+      toast({ title: 'Error', description: 'Could not save the reminder(s).', variant: 'destructive' });
     } finally {
       setIsSubmitting(false);
     }
@@ -103,7 +189,7 @@ export default function ReminderPage() {
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle className="font-headline text-2xl">Set New Reminder</DialogTitle>
+              <DialogTitle className="font-headline text-2xl">Set New Reminder(s)</DialogTitle>
             </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
@@ -114,35 +200,56 @@ export default function ReminderPage() {
                     <FormMessage />
                   </FormItem>
                 )} />
-                <FormField control={form.control} name="type" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Reminder Type</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger><SelectValue placeholder="Select reminder type" /></SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="Morning">Morning</SelectItem>
-                          <SelectItem value="Afternoon">Afternoon</SelectItem>
-                          <SelectItem value="Night">Night</SelectItem>
-                          <SelectItem value="Custom">Custom</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                 <FormField control={form.control} name="time" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Time (24-hour format)</FormLabel>
-                    <FormControl><Input type="time" {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
+
+                <FormField
+                  control={form.control}
+                  name="times"
+                  render={() => (
+                    <FormItem>
+                      <div className="mb-4">
+                        <FormLabel className="text-base">Time of Day</FormLabel>
+                      </div>
+                      <div className="flex flex-wrap gap-4">
+                        {timeOptions.map((item) => (
+                          <FormField
+                            key={item.id}
+                            control={form.control}
+                            name="times"
+                            render={({ field }) => (
+                              <FormItem
+                                key={item.id}
+                                className="flex flex-row items-center space-x-3 space-y-0"
+                              >
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value?.includes(item.id)}
+                                    onCheckedChange={(checked) => {
+                                      return checked
+                                        ? field.onChange([...field.value, item.id])
+                                        : field.onChange(field.value?.filter((value) => value !== item.id));
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormLabel className="font-normal flex items-center gap-2">
+                                   <item.icon className="h-4 w-4" /> {item.label}
+                                </FormLabel>
+                              </FormItem>
+                            )}
+                          />
+                        ))}
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <SelectedTimesWatcher control={form.control} />
+                
                 <DialogFooter>
                   <DialogClose asChild><Button type="button" variant="secondary">Cancel</Button></DialogClose>
                   <Button type="submit" disabled={isSubmitting}>
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Save Reminder
+                    Save Reminder(s)
                   </Button>
                 </DialogFooter>
               </form>
@@ -223,5 +330,3 @@ export default function ReminderPage() {
     </div>
   );
 }
-
-    
