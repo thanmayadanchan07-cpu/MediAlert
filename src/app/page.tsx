@@ -110,7 +110,7 @@ export default function Home() {
           {features.map((feature) => (
             <Card key={feature.title} className="text-center bg-card hover:shadow-xl transition-shadow flex flex-col items-center p-6">
               <div className="bg-pink text-pink-foreground rounded-full p-4 mb-4">
-                <feature.icon className="w-10 h-10" />
+                <feature.icon className="w-12 h-12" />
               </div>
               <CardHeader className="p-0 mb-2">
                 <CardTitle className="font-headline text-2xl font-bold">{feature.title}</CardTitle>
