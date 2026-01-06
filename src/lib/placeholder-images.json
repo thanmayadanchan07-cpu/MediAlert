@@ -2,9 +2,9 @@
   "placeholderImages": [
     {
       "id": "home-illustration",
-      "description": "Friendly medicine reminder illustration, showing pills, alarm clock, smartphone, with pastel-friendly colors, clean white background, welcoming healthcare design, suitable for all ages.",
-      "imageUrl": "https://images.unsplash.com/photo-1634796429173-ec1b64dda0ed?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtZWRpY2luZSUyMHJlbWluZGVyfGVufDB8fHx8MTc2NzcwODk4OXww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "medicine reminder"
+      "description": "A doctor in a white coat with a stethoscope around their neck, using a laptop computer, representing modern healthcare technology.",
+      "imageUrl": "https://images.unsplash.com/photo-1576091160550-2173dba999ef?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtZWRpY2FsfGVufDB8fHx8MTcyMDY1NzM0N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "doctor computer"
     },
     {
       "id": "dosage-feature",
