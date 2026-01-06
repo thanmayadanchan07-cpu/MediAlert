@@ -72,9 +72,9 @@ export default {
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))',
         },
-        pink: {
-          DEFAULT: 'hsl(var(--pink))',
-          foreground: 'hsl(var(--pink-foreground))',
+        lavender: {
+          DEFAULT: 'hsl(var(--lavender))',
+          foreground: 'hsl(var(--lavender-foreground))',
         },
       },
       borderRadius: {

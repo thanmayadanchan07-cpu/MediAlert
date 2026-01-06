@@ -109,8 +109,8 @@ export default function Home() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature) => (
             <Card key={feature.title} className="text-center bg-card hover:shadow-xl transition-shadow flex flex-col items-center p-6">
-              <div className="bg-pink text-pink-foreground rounded-full p-4 mb-4">
-                <feature.icon className="w-12 h-12" />
+              <div className="bg-lavender text-lavender-foreground rounded-full p-4 mb-4">
+                <feature.icon className="w-16 h-16" />
               </div>
               <CardHeader className="p-0 mb-2">
                 <CardTitle className="font-headline text-2xl font-bold">{feature.title}</CardTitle>
