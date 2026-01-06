@@ -68,7 +68,7 @@ function SelectedTimesWatcher({ control }: { control: any }) {
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Morning Quantity</FormLabel>
-                            <FormControl><Input placeholder="e.g., 1 tablet" {...field} /></FormControl>
+                            <FormControl><Input placeholder="e.g., 1, 1/2, 1 1/2 tablets" {...field} /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -81,7 +81,7 @@ function SelectedTimesWatcher({ control }: { control: any }) {
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Afternoon Quantity</FormLabel>
-                            <FormControl><Input placeholder="e.g., 5ml" {...field} /></FormControl>
+                            <FormControl><Input placeholder="e.g., 1, 1/2, 1 1/2 tablets" {...field} /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -94,7 +94,7 @@ function SelectedTimesWatcher({ control }: { control: any }) {
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Night Quantity</FormLabel>
-                            <FormControl><Input placeholder="e.g., 2 capsules" {...field} /></FormControl>
+                            <FormControl><Input placeholder="e.g., 1, 1/2, 1 1/2 tablets" {...field} /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
