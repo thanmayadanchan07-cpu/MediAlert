@@ -113,7 +113,7 @@ export default function Home() {
                 <feature.icon className="w-8 h-8" />
               </div>
               <CardHeader className="p-0 mb-2">
-                <CardTitle className="font-headline text-xl font-semibold">{feature.title}</CardTitle>
+                <CardTitle className="font-headline text-2xl font-bold">{feature.title}</CardTitle>
               </CardHeader>
               <CardContent className="p-0 flex-grow">
                 <p className="text-muted-foreground font-body">{feature.description}</p>
