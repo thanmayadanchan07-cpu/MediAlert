@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
@@ -9,13 +9,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase';
 import type { Dosage } from '@/lib/firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
-import { PlusCircle, Pill, Trash2, Edit, X, Loader2, FileText, Sun, Moon, CloudSun } from 'lucide-react';
+import { PlusCircle, Pill, Trash2, Edit, Loader2, FileText, Sun, Moon, CloudSun } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,10 +30,20 @@ import {
 
 const dosageSchema = z.object({
   name: z.string().min(1, 'Medicine name is required.'),
-  quantity: z.string().min(1, 'Dosage quantity is required.'),
-  time: z.array(z.string()).refine((value) => value.length > 0, {
+  times: z.array(z.string()).refine((value) => value.length > 0, {
     message: 'You must select at least one time of day.',
   }),
+  morningQuantity: z.string().optional(),
+  afternoonQuantity: z.string().optional(),
+  nightQuantity: z.string().optional(),
+}).refine(data => {
+    if (data.times.includes('Morning') && !data.morningQuantity) return false;
+    if (data.times.includes('Afternoon') && !data.afternoonQuantity) return false;
+    if (data.times.includes('Night') && !data.nightQuantity) return false;
+    return true;
+}, {
+    message: "Please enter a quantity for each selected time.",
+    path: ['times'] // Attach error to the times field for general display
 });
 
 const timeOptions = [
@@ -41,6 +51,58 @@ const timeOptions = [
   { id: 'Afternoon', label: 'Afternoon', icon: CloudSun },
   { id: 'Night', label: 'Night', icon: Moon },
 ];
+
+function SelectedTimesWatcher({ control }: { control: any }) {
+    const selectedTimes = useWatch({
+        control,
+        name: 'times',
+        defaultValue: []
+    });
+
+    return (
+        <>
+            {selectedTimes.includes('Morning') && (
+                <FormField
+                    control={control}
+                    name="morningQuantity"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Morning Quantity</FormLabel>
+                            <FormControl><Input placeholder="e.g., 1 tablet" {...field} /></FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            )}
+            {selectedTimes.includes('Afternoon') && (
+                <FormField
+                    control={control}
+                    name="afternoonQuantity"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Afternoon Quantity</FormLabel>
+                            <FormControl><Input placeholder="e.g., 5ml" {...field} /></FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            )}
+            {selectedTimes.includes('Night') && (
+                <FormField
+                    control={control}
+                    name="nightQuantity"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Night Quantity</FormLabel>
+                            <FormControl><Input placeholder="e.g., 2 capsules" {...field} /></FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            )}
+        </>
+    );
+}
 
 export default function DosagePage() {
   const { user, isUserLoading } = useUser();
@@ -58,16 +120,19 @@ export default function DosagePage() {
 
   const form = useForm<z.infer<typeof dosageSchema>>({
     resolver: zodResolver(dosageSchema),
-    defaultValues: { name: '', quantity: '', time: [] },
+    defaultValues: { name: '', times: [], morningQuantity: '', afternoonQuantity: '', nightQuantity: '' },
   });
 
   const handleDialogOpen = (dosage: Dosage | null = null) => {
     setEditingDosage(dosage);
     if (dosage) {
-      const timeArray = Array.isArray(dosage.time) ? dosage.time : dosage.time.split(', ');
-      form.reset({ name: dosage.name, quantity: dosage.quantity, time: timeArray });
+      const times = dosage.dosages.map(d => d.time);
+      const morningQty = dosage.dosages.find(d => d.time === 'Morning')?.quantity || '';
+      const afternoonQty = dosage.dosages.find(d => d.time === 'Afternoon')?.quantity || '';
+      const nightQty = dosage.dosages.find(d => d.time === 'Night')?.quantity || '';
+      form.reset({ name: dosage.name, times, morningQuantity: morningQty, afternoonQuantity: afternoonQty, nightQuantity: nightQty });
     } else {
-      form.reset({ name: '', quantity: '', time: [] });
+      form.reset({ name: '', times: [], morningQuantity: '', afternoonQuantity: '', nightQuantity: '' });
     }
     setIsDialogOpen(true);
   };
@@ -80,9 +145,18 @@ export default function DosagePage() {
     setIsSubmitting(true);
     
     const collectionRef = collection(firestore, 'users', user.uid, 'dosage');
+    
+    const dosagesToSave = values.times.map(time => {
+        let quantity = '';
+        if (time === 'Morning') quantity = values.morningQuantity!;
+        if (time === 'Afternoon') quantity = values.afternoonQuantity!;
+        if (time === 'Night') quantity = values.nightQuantity!;
+        return { time, quantity };
+    });
+
     const dataToSave = {
-      ...values,
-      time: values.time.join(', '),
+      name: values.name,
+      dosages: dosagesToSave,
     };
 
     try {
@@ -140,16 +214,10 @@ export default function DosagePage() {
                     <FormMessage />
                   </FormItem>
                 )} />
-                <FormField control={form.control} name="quantity" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Quantity / Dosage</FormLabel>
-                    <FormControl><Input placeholder="e.g., 1 tablet, 5ml" {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
+
                 <FormField
                   control={form.control}
-                  name="time"
+                  name="times"
                   render={() => (
                     <FormItem>
                       <div className="mb-4">
@@ -160,7 +228,7 @@ export default function DosagePage() {
                           <FormField
                             key={item.id}
                             control={form.control}
-                            name="time"
+                            name="times"
                             render={({ field }) => {
                               return (
                                 <FormItem
@@ -194,6 +262,9 @@ export default function DosagePage() {
                     </FormItem>
                   )}
                 />
+
+                <SelectedTimesWatcher control={form.control} />
+                
                 <DialogFooter>
                   <DialogClose asChild><Button type="button" variant="secondary">Cancel</Button></DialogClose>
                   <Button type="submit" disabled={isSubmitting}>
@@ -234,11 +305,20 @@ export default function DosagePage() {
                 <div className="bg-secondary p-3 rounded-full"><Pill className="h-6 w-6 text-primary" /></div>
                 <div>
                   <CardTitle className="font-headline text-xl">{dosage.name}</CardTitle>
-                  <CardDescription>Time: {dosage.time}</CardDescription>
                 </div>
               </CardHeader>
-              <CardContent className="flex-grow">
-                <p className="text-lg font-semibold">{dosage.quantity}</p>
+              <CardContent className="flex-grow space-y-2">
+                {dosage.dosages?.map(d => (
+                    <div key={d.time} className="flex justify-between items-center text-sm">
+                        <span className="font-semibold flex items-center gap-2">
+                            {d.time === 'Morning' && <Sun className="w-4 h-4 text-muted-foreground" />}
+                            {d.time === 'Afternoon' && <CloudSun className="w-4 h-4 text-muted-foreground" />}
+                            {d.time === 'Night' && <Moon className="w-4 h-4 text-muted-foreground" />}
+                            {d.time}
+                        </span>
+                        <span>{d.quantity}</span>
+                    </div>
+                ))}
               </CardContent>
               <CardContent className="flex justify-end gap-2">
                  <Button variant="ghost" size="icon" onClick={() => handleDialogOpen(dosage)}>
@@ -271,5 +351,3 @@ export default function DosagePage() {
     </div>
   );
 }
-
-    

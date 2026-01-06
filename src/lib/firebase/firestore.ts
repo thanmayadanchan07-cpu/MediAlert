@@ -17,8 +17,10 @@ import {
 export interface Dosage {
   id?: string;
   name: string;
-  time: string;
-  quantity: string;
+  dosages: {
+    time: 'Morning' | 'Afternoon' | 'Night';
+    quantity: string;
+  }[];
 }
 
 export const addDosage = (userId: string, dosage: Omit<Dosage, 'id'>) => {
