@@ -8,27 +8,33 @@
     },
     {
       "id": "dosage-feature",
-      "description": "An icon or image representing dosage tracking.",
-      "imageUrl": "https://images.unsplash.com/photo-1702776102013-1530fcb73add?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwaWxscyUyMGJvdHRsZXxlbnwwfHx8fDE3Njc2NDE0NTJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "pills bottle"
+      "description": "Close-up of a variety of colorful pills and capsules spilling from a bottle, representing medication and dosage.",
+      "imageUrl": "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtZWRpY2F0aW9uJTIwcGlsbHN8ZW58MHx8fHwxNzIyMzg5OTMxfDA&ixlib=rb-4.1.0&q=80&w=600",
+      "imageHint": "medication pills"
     },
     {
       "id": "reminder-feature",
-      "description": "An icon or image representing smart reminders.",
-      "imageUrl": "https://images.unsplash.com/photo-1588173129725-40a81ac0360d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxhbGFybSUyMGNsb2NrfGVufDB8fHx8MTc2NzYyMTU0Nnww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "alarm clock"
+      "description": "A classic alarm clock rings next to a bottle of pills, symbolizing the importance of timely medication reminders.",
+      "imageUrl": "https://images.unsplash.com/photo-1562993233-4a1f6a1523af?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtZWRpY2luZSUyMHJlbWluZGVyfGVufDB8fHx8MTcyMjI4MjAwNnww&ixlib=rb-4.1.0&q=80&w=600",
+      "imageHint": "medicine reminder"
     },
     {
       "id": "refill-feature",
-      "description": "An icon or image representing smart refill.",
-      "imageUrl": "https://images.unsplash.com/photo-1711985220413-50865dc0bb4f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8bWVkaWNpbmUlMjBib3h8ZW58MHx8fHwxNzY3NzA4OTkwfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "medicine box"
+      "description": "A hand places a prescription medication box into a paper bag, representing a pharmacy refill.",
+      "imageUrl": "https://images.unsplash.com/photo-1628771065518-1d8c9a799d15?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxwaGFybWFjeSUyMHJlZmlsbHxlbnwwfHx8fDE3MjIzOTAwNTR8MA&ixlib=rb-4.1.0&q=80&w=600",
+      "imageHint": "pharmacy refill"
     },
     {
       "id": "backup-feature",
-      "description": "An icon or image representing cloud backup.",
-      "imageUrl": "https://images.unsplash.com/photo-1710181717510-8e3896937fbd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxjbG91ZCUyMHNlY3VyaXR5fGVufDB8fHx8MTc2NzcwODk5MHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "description": "A secure, glowing digital cloud icon, symbolizing safe and protected data backup.",
+      "imageUrl": "https://images.unsplash.com/photo-1510915228340-29c85a43dcfe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjbG91ZCUyMHNlY3VyaXR5fGVufDB8fHx8MTcyMjM5MDA4OHww&ixlib=rb-4.1.0&q=80&w=600",
       "imageHint": "cloud security"
+    },
+    {
+      "id": "about-team",
+      "description": "A diverse team of smiling healthcare professionals stands together, representing a friendly and inclusive approach to medical care.",
+      "imageUrl": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxoZWFsdGhjYXJlJTIwdGVhbXxlbnwwfHx8fDE3MjIzODk2NTh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "healthcare team"
     },
     {
       "id": "about-medications",
