@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useState } from 'react';
@@ -12,10 +13,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import Image from 'next/image';
 import { addDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase';
 import type { Reminder } from '@/lib/firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { PlusCircle, Bell, Trash2, Loader2, BellRing } from 'lucide-react';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,6 +36,8 @@ const reminderSchema = z.object({
   time: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Please use HH:MM format (e.g., 09:00).'),
   type: z.enum(['Morning', 'Afternoon', 'Night', 'Custom']),
 });
+
+const reminderIllustration = PlaceHolderImages.find(img => img.id === 'reminder-illustration');
 
 export default function ReminderPage() {
   const { user, isUserLoading } = useUser();
@@ -146,6 +151,19 @@ export default function ReminderPage() {
         </Dialog>
       </div>
 
+        {reminderIllustration && (
+            <div className="mb-12 rounded-lg overflow-hidden shadow-lg">
+                <Image
+                    src={reminderIllustration.imageUrl}
+                    alt={reminderIllustration.description}
+                    width={1080}
+                    height={400}
+                    className="w-full h-64 object-cover"
+                    data-ai-hint={reminderIllustration.imageHint}
+                />
+            </div>
+        )}
+
       {isUserLoading || remindersLoading ? (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
            {[...Array(3)].map((_, i) => <Card key={i}><CardHeader><div className="h-6 bg-muted rounded w-1/2"></div></CardHeader><CardContent><div className="h-4 bg-muted rounded w-full"></div></CardContent></Card>)}
@@ -205,3 +223,5 @@ export default function ReminderPage() {
     </div>
   );
 }
+
+    

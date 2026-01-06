@@ -27,38 +27,44 @@
     {
       "id": "backup-feature",
       "description": "A secure, glowing digital cloud icon, symbolizing safe and protected data backup.",
-      "imageUrl": "https://images.unsplash.com/photo-1510915228340-29c85a43dcfe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjbG91ZCUyMHNlY3VyaXR5fGVufDB8fHx8MTcyMjM5MDA4OHww&ixlib=rb-4.1.0&q=80&w=600",
+      "imageUrl": "https://images.unsplash.com/photo-1510915228340-29c85a43dcfe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjbG91ZCUyMHNlY3VyaXR5fGVufDB8fHx8MTcyMjM5MDA4OHww&ixlib.rb-4.1.0&q=80&w=600",
       "imageHint": "cloud security"
     },
     {
       "id": "about-team",
       "description": "A diverse group of healthcare professionals standing together in a modern hospital hallway.",
-      "imageUrl": "https://images.unsplash.com/photo-1576091160550-2173dba999ef?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxoZWFsdGhjYXJlJTIwdGVhbXxlbnwwfHx8fDE3MjQzMzY4OTB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1576091160550-2173dba999ef?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxoZWFsdGhjYXJlJTIwdGVhbXxlbnwwfHx8fDE3MjQzMzY4OTB8MA&ixlib.rb-4.1.0&q=80&w=1080",
       "imageHint": "healthcare team"
     },
     {
       "id": "about-medications",
       "description": "A collection of various medications including pills, capsules, and syrups, representing comprehensive medication management.",
-      "imageUrl": "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtZWRpY2F0aW9ufGVufDB8fHx8MTcyMjI4MjAwNnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtZWRpY2F0aW9ufGVufDB8fHx8MTcyMjI4MjAwNnww&ixlib.rb-4.1.0&q=80&w=1080",
       "imageHint": "pills tablets"
     },
     {
       "id": "about-reminder",
       "description": "An alarm clock next to a bottle of pills, symbolizing a medicine reminder.",
-      "imageUrl": "https://images.unsplash.com/photo-1562993233-4a1f6a1523af?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtZWRpY2luZSUyMHJlbWluZGVyfGVufDB8fHx8MTcyMjMyNTI0Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1562993233-4a1f6a1523af?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtZWRpY2luZSUyMHJlbWluZGVyfGVufDB8fHx8MTcyMjMyNTI0Nnww&ixlib.rb-4.1.0&q=80&w=1080",
       "imageHint": "medicine reminder"
     },
     {
       "id": "dosage-illustration",
       "description": "Illustration for the dosage page.",
-      "imageUrl": "https://images.unsplash.com/photo-1631507623095-c710d82f1938462?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtZWRpY2luZSUyMHNjaGVkdWxlfGVufDB8fHx8MTc2NzcwODk5MHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1631507623095-c710d82f1938462?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtZWRpY2luZSUyMHNjaGVkdWxlfGVufDB8fHx8MTc2NzcwODk5MHww&ixlib.rb-4.1.0&q=80&w=1080",
       "imageHint": "medicine schedule"
     },
     {
       "id": "reminder-illustration",
-      "description": "Illustration for the reminder page.",
-      "imageUrl": "https://images.unsplash.com/photo-1766159965108-a150941abcaa?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxub3RpZmljYXRpb24lMjBhbGVydHxlbnwwfHx8fDE3Njc3MDg5OTB8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "notification alert"
+      "description": "Close up on a smartphone screen showing a notification alert for a medication reminder, with pills in the background.",
+      "imageUrl": "https://images.unsplash.com/photo-1631507623095-c710d82f1938?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtZWRpY2F0aW9uJTIwcmVtaW5kZXIlMjBwaG9uZXxlbnwwfHx8fDE3MjY3MjgxNDJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "medication phone"
+    },
+    {
+      "id": "refill-illustration",
+      "description": "A person's hand holding a pill bottle that is nearly empty, with a blurred pharmacy in the background.",
+      "imageUrl": "https://images.unsplash.com/photo-1550574291-2d9fd394a153?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxoYWxmJTIwZW1wdHklMjBwaWxsJTIwYm90dGxlfGVufDB8fHx8MTcyNTQ5NzE1OXww&ixlib.rb-4.1.0&q=80&w=1080",
+      "imageHint": "pill bottle"
     }
   ]
 }

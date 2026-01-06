@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useState } from 'react';
@@ -11,6 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import Image from 'next/image';
 import { addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase';
 import type { RefillItem } from '@/lib/firebase/firestore';
 import { getPersonalizedRefillSuggestion, type PersonalizedRefillSuggestionOutput } from '@/ai/flows/personalized-refill-suggestions';
@@ -19,6 +21,7 @@ import { PlusCircle, Box, Trash2, Edit, Loader2, PackageSearch, Package, Externa
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,6 +44,8 @@ const suggestionSchema = z.object({
   medication: z.string().min(1, 'Medication name is required.'),
   location: z.string().min(1, 'Your location is required.'),
 });
+
+const refillIllustration = PlaceHolderImages.find(img => img.id === 'refill-illustration');
 
 const LOW_STOCK_THRESHOLD = 0.2; // 20%
 
@@ -153,6 +158,20 @@ export default function SmartRefillPage() {
             </DialogContent>
           </Dialog>
         </div>
+
+        {refillIllustration && (
+            <div className="mb-12 rounded-lg overflow-hidden shadow-lg">
+                <Image
+                    src={refillIllustration.imageUrl}
+                    alt={refillIllustration.description}
+                    width={1080}
+                    height={400}
+                    className="w-full h-64 object-cover"
+                    data-ai-hint={refillIllustration.imageHint}
+                />
+            </div>
+        )}
+
         {/* Inventory list display */}
         {isUserLoading || itemsLoading ? <div className="h-24 bg-muted rounded-lg animate-pulse" />
         : !user ? <Card className="text-center py-12"><CardHeader><CardTitle>Log in to track inventory</CardTitle></CardHeader></Card>
@@ -253,3 +272,5 @@ export default function SmartRefillPage() {
     </div>
   );
 }
+
+    
