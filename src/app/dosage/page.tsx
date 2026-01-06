@@ -154,17 +154,21 @@ export default function DosagePage() {
         return { time, quantity };
     });
 
-    const dataToSave = {
-      name: values.name,
-      dosages: dosagesToSave,
-    };
-
     try {
       if (editingDosage) {
         const docRef = doc(collectionRef, editingDosage.id!);
+        const dataToSave = {
+            name: values.name,
+            dosages: dosagesToSave,
+        };
         updateDocumentNonBlocking(docRef, dataToSave);
         toast({ title: 'Success', description: 'Dosage updated successfully.' });
       } else {
+        const dataToSave = {
+            userId: user.uid,
+            name: values.name,
+            dosages: dosagesToSave,
+        };
         addDocumentNonBlocking(collectionRef, dataToSave);
         toast({ title: 'Success', description: 'New dosage added.' });
       }
