@@ -65,23 +65,24 @@ export interface RefillItem {
   name: string;
   totalQuantity: number;
   remainingQuantity: number;
+  userId: string;
 }
 
-export const addRefillItem = (userId: string, item: Omit<RefillItem, 'id'>) => {
-    return addDoc(collection(db, 'users', userId, 'refill'), { ...item, createdAt: serverTimestamp() });
+export const addRefillItem = (userId: string, item: Omit<RefillItem, 'id' | 'userId'>) => {
+    return addDoc(collection(db, 'users', userId, 'refills'), { ...item, userId, createdAt: serverTimestamp() });
 };
 
 export const getRefillItems = (userId:string) => {
-    const q = query(collection(db, 'users', userId, 'refill'), orderBy('name', 'asc'));
+    const q = query(collection(db, 'users', userId, 'refills'), orderBy('name', 'asc'));
     return getDocs(q);
 };
 
 export const updateRefillItem = (userId: string, itemId: string, data: Partial<RefillItem>) => {
-    return updateDoc(doc(db, 'users', userId, 'refill', itemId), data);
+    return updateDoc(doc(db, 'users', userId, 'refills', itemId), data);
 };
 
 export const deleteRefillItem = (userId: string, itemId: string) => {
-  return deleteDoc(doc(db, 'users', userId, 'refill', itemId));
+  return deleteDoc(doc(db, 'users', userId, 'refills', itemId));
 };
 
 // Feedback

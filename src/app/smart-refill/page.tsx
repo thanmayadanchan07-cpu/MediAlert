@@ -50,7 +50,7 @@ export default function SmartRefillPage() {
   const { toast } = useToast();
   
   const refillItemsQuery = useMemoFirebase(() => 
-    user ? collection(firestore, 'users', user.uid, 'refill') : null
+    user ? collection(firestore, 'users', user.uid, 'refills') : null
   , [user, firestore]);
   const { data: refillItems, isLoading: itemsLoading } = useCollection<RefillItem>(refillItemsQuery);
 
@@ -73,21 +73,21 @@ export default function SmartRefillPage() {
 
   const handleDialogOpen = (item: RefillItem | null = null) => {
     setEditingItem(item);
-    refillForm.reset(item ? { ...item } : { name: '', totalQuantity: 10, remainingQuantity: 10 });
+    refillForm.reset(item ? { name: item.name, totalQuantity: item.totalQuantity, remainingQuantity: item.remainingQuantity } : { name: '', totalQuantity: 10, remainingQuantity: 10 });
     setIsDialogOpen(true);
   };
 
   const onRefillSubmit = async (values: z.infer<typeof refillSchema>) => {
     if (!user) return;
     setIsSubmitting(true);
-    const collectionRef = collection(firestore, 'users', user.uid, 'refill');
+    const collectionRef = collection(firestore, 'users', user.uid, 'refills');
     try {
       if (editingItem) {
         const docRef = doc(collectionRef, editingItem.id!);
         updateDocumentNonBlocking(docRef, values);
         toast({ title: 'Success', description: 'Inventory updated.' });
       } else {
-        addDocumentNonBlocking(collectionRef, values);
+        addDocumentNonBlocking(collectionRef, { ...values, userId: user.uid });
         toast({ title: 'Success', description: 'New medicine added to inventory.' });
       }
       setIsDialogOpen(false);
@@ -100,7 +100,7 @@ export default function SmartRefillPage() {
 
   const onDelete = async (itemId: string) => {
     if (!user) return;
-    const docRef = doc(firestore, 'users', user.uid, 'refill', itemId);
+    const docRef = doc(firestore, 'users', user.uid, 'refills', itemId);
     try {
       deleteDocumentNonBlocking(docRef);
       toast({ title: 'Item removed', description: 'The item has been deleted from your inventory.' });
