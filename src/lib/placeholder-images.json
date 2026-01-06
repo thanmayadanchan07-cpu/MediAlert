@@ -3,7 +3,7 @@
     {
       "id": "home-illustration",
       "description": "A doctor in a white coat with a stethoscope around their neck, using a laptop computer, representing modern healthcare technology.",
-      "imageUrl": "https://images.unsplash.com/photo-1576091160550-2173dba999ef?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtZWRpY2FsfGVufDB8fHx8MTcyMDY1NzM0N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://storage.googleapis.com/aai-web-samples/medi-alert.png",
       "imageHint": "doctor computer"
     },
     {
@@ -14,9 +14,9 @@
     },
     {
       "id": "reminder-feature",
-      "description": "A modern smartwatch on a wrist, symbolizing a wearable reminder for medication.",
-      "imageUrl": "https://images.unsplash.com/photo-1544132166-252c5a86de03?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzbWFydCUyMHdhdGNofGVufDB8fHx8MTcyNDI2NjY0NHww&ixlib=rb-4.1.0&q=80&w=600",
-      "imageHint": "smart watch"
+      "description": "An alarm clock next to a bottle of pills, symbolizing a medicine reminder.",
+      "imageUrl": "https://images.unsplash.com/photo-1562993233-4a1f6a1523af?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtZWRpY2luZSUyMHJlbWluZGVyfGVufDB8fHx8MTcyMjMyNTI0Nnww&ixlib=rb-4.1.0&q=80&w=600",
+      "imageHint": "medicine reminder"
     },
     {
       "id": "refill-feature",
