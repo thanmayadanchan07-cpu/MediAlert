@@ -8,13 +8,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase';
 import type { Dosage } from '@/lib/firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
-import { PlusCircle, Pill, Trash2, Edit, X, Loader2, FileText } from 'lucide-react';
+import { PlusCircle, Pill, Trash2, Edit, X, Loader2, FileText, Sun, Moon, CloudSun } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,8 +31,16 @@ import {
 const dosageSchema = z.object({
   name: z.string().min(1, 'Medicine name is required.'),
   quantity: z.string().min(1, 'Dosage quantity is required.'),
-  time: z.string().min(1, 'Time is required.'),
+  time: z.array(z.string()).refine((value) => value.length > 0, {
+    message: 'You must select at least one time of day.',
+  }),
 });
+
+const timeOptions = [
+  { id: 'Morning', label: 'Morning', icon: Sun },
+  { id: 'Afternoon', label: 'Afternoon', icon: CloudSun },
+  { id: 'Night', label: 'Night', icon: Moon },
+];
 
 export default function DosagePage() {
   const { user, isUserLoading } = useUser();
@@ -49,15 +58,16 @@ export default function DosagePage() {
 
   const form = useForm<z.infer<typeof dosageSchema>>({
     resolver: zodResolver(dosageSchema),
-    defaultValues: { name: '', quantity: '', time: '' },
+    defaultValues: { name: '', quantity: '', time: [] },
   });
 
   const handleDialogOpen = (dosage: Dosage | null = null) => {
     setEditingDosage(dosage);
     if (dosage) {
-      form.reset({ name: dosage.name, quantity: dosage.quantity, time: dosage.time });
+      const timeArray = Array.isArray(dosage.time) ? dosage.time : dosage.time.split(', ');
+      form.reset({ name: dosage.name, quantity: dosage.quantity, time: timeArray });
     } else {
-      form.reset({ name: '', quantity: '', time: '' });
+      form.reset({ name: '', quantity: '', time: [] });
     }
     setIsDialogOpen(true);
   };
@@ -70,14 +80,18 @@ export default function DosagePage() {
     setIsSubmitting(true);
     
     const collectionRef = collection(firestore, 'users', user.uid, 'dosage');
+    const dataToSave = {
+      ...values,
+      time: values.time.join(', '),
+    };
 
     try {
       if (editingDosage) {
         const docRef = doc(collectionRef, editingDosage.id!);
-        updateDocumentNonBlocking(docRef, values);
+        updateDocumentNonBlocking(docRef, dataToSave);
         toast({ title: 'Success', description: 'Dosage updated successfully.' });
       } else {
-        addDocumentNonBlocking(collectionRef, values);
+        addDocumentNonBlocking(collectionRef, dataToSave);
         toast({ title: 'Success', description: 'New dosage added.' });
       }
       setIsDialogOpen(false);
@@ -133,13 +147,53 @@ export default function DosagePage() {
                     <FormMessage />
                   </FormItem>
                 )} />
-                <FormField control={form.control} name="time" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Time</FormLabel>
-                    <FormControl><Input placeholder="e.g., After breakfast, 9:00 AM" {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
+                <FormField
+                  control={form.control}
+                  name="time"
+                  render={() => (
+                    <FormItem>
+                      <div className="mb-4">
+                        <FormLabel className="text-base">Time of Day</FormLabel>
+                      </div>
+                      <div className="flex flex-wrap gap-4">
+                        {timeOptions.map((item) => (
+                          <FormField
+                            key={item.id}
+                            control={form.control}
+                            name="time"
+                            render={({ field }) => {
+                              return (
+                                <FormItem
+                                  key={item.id}
+                                  className="flex flex-row items-center space-x-3 space-y-0"
+                                >
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={field.value?.includes(item.id)}
+                                      onCheckedChange={(checked) => {
+                                        return checked
+                                          ? field.onChange([...field.value, item.id])
+                                          : field.onChange(
+                                              field.value?.filter(
+                                                (value) => value !== item.id
+                                              )
+                                            )
+                                      }}
+                                    />
+                                  </FormControl>
+                                  <FormLabel className="font-normal flex items-center gap-2">
+                                     <item.icon className="h-4 w-4" /> {item.label}
+                                  </FormLabel>
+                                </FormItem>
+                              )
+                            }}
+                          />
+                        ))}
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <DialogFooter>
                   <DialogClose asChild><Button type="button" variant="secondary">Cancel</Button></DialogClose>
                   <Button type="submit" disabled={isSubmitting}>
@@ -217,3 +271,5 @@ export default function DosagePage() {
     </div>
   );
 }
+
+    
