@@ -45,7 +45,7 @@ export default function LoginForm() {
         try {
           const newUserCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
           const profileRef = doc(firestore, 'users', newUserCredential.user.uid, 'profile', 'data');
-          setDocumentNonBlocking(profileRef, { email: newUserCredential.user.email }, { merge: true });
+          setDocumentNonBlocking(profileRef, { id: newUserCredential.user.uid, email: newUserCredential.user.email }, { merge: true });
         } catch (createError) {
           const createAuthError = createError as AuthError;
           toast({
