@@ -53,8 +53,11 @@ export default function Home() {
         <h1 className="font-headline text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tighter text-primary">
           MediAlert
         </h1>
-        <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-foreground/80 font-body font-semibold">
+        <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-foreground/80 font-body font-bold">
           Never miss a dose, never run out of medicines.
+        </p>
+        <p className="mt-6 max-w-3xl mx-auto text-base text-muted-foreground">
+            MediAlert is your personal health assistant, designed to help you manage your medications responsibly and stay on top of your health journey. With our intuitive interface, you can set reminders, track dosages, and get smart alerts for refills, all in one secure place.
         </p>
       </section>
 
