@@ -56,7 +56,7 @@ export default function Home() {
         <p className="mt-4 max-w-2xl mx-auto text-xl md:text-2xl text-foreground/80 font-body font-extrabold">
           Never Miss a Dose, Never Run Out of Medicines.
         </p>
-        <p className="mt-6 max-w-3xl mx-auto text-base text-muted-foreground">
+        <p className="mt-6 max-w-3xl mx-auto text-lg text-muted-foreground">
             MediAlert is your personal health assistant, designed to help you manage your medications responsibly and stay on top of your health journey. With our intuitive interface, you can set reminders, track dosages, and get smart alerts for refills, all in one secure place.
         </p>
       </section>
