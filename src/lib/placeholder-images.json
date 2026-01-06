@@ -2,9 +2,9 @@
   "placeholderImages": [
     {
       "id": "home-illustration",
-      "description": "A doctor in a white coat with a stethoscope around their neck, using a laptop computer, representing modern healthcare technology.",
-      "imageUrl": "https://storage.googleapis.com/aai-web-samples/medi-alert.png",
-      "imageHint": "doctor computer"
+      "description": "A smartphone screen showing a notification alert for a medication reminder, with pills in the background, representing modern healthcare technology.",
+      "imageUrl": "https://images.unsplash.com/photo-1631507623095-c710d82f1938?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtZWRpY2F0aW9uJTIwcmVtaW5kZXIlMjBwaG9uZXxlbnwwfHx8fDE3MjY3MjgxNDJ8MA&ixlib=rb-4.1.0&q=80&w=800",
+      "imageHint": "medication phone"
     },
     {
       "id": "dosage-feature",
@@ -57,7 +57,7 @@
     {
       "id": "reminder-illustration",
       "description": "Close up on a smartphone screen showing a notification alert for a medication reminder, with pills in the background.",
-      "imageUrl": "https://images.unsplash.com/photo-1631507623095-c710d82f1938?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtZWRpY2F0aW9uJTIwcmVtaW5kZXIlMjBwaG9uZXxlbnwwfHx8fDE3MjY3MjgxNDJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1631507623095-c710d82f1938?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtZWRpY2F0aW9uJTIwcmVtaW5kZXIlMjBwaG9uZXxlbnwwfHx8fDE3MjY3MjgxNDJ8MA&ixlib.rb-4.1.0&q=80&w=1080",
       "imageHint": "medication phone"
     },
     {
