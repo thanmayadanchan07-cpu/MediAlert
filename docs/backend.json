@@ -1,0 +1,277 @@
+{
+  "entities": {
+    "UserProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserProfile",
+      "type": "object",
+      "description": "Represents a user's profile within the MediAlert application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user profile."
+        },
+        "email": {
+          "type": "string",
+          "description": "User's email address.",
+          "format": "email"
+        },
+        "name": {
+          "type": "string",
+          "description": "User's full name."
+        }
+      },
+      "required": [
+        "id",
+        "email"
+      ]
+    },
+    "Dosage": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Dosage",
+      "type": "object",
+      "description": "Represents a single dosage entry for a user's medication.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the dosage entry."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to UserProfile. (Relationship: UserProfile 1:N Dosage)"
+        },
+        "medicineName": {
+          "type": "string",
+          "description": "Name of the medicine."
+        },
+        "time": {
+          "type": "string",
+          "description": "Time the medicine should be taken (e.g., 08:00, 12:00, 20:00)."
+        },
+        "quantity": {
+          "type": "number",
+          "description": "Quantity of the medicine to be taken."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "medicineName",
+        "time",
+        "quantity"
+      ]
+    },
+    "Reminder": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Reminder",
+      "type": "object",
+      "description": "Represents a reminder for a specific dosage.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the reminder."
+        },
+        "dosageId": {
+          "type": "string",
+          "description": "Reference to Dosage. (Relationship: Dosage 1:1 Reminder)"
+        },
+        "time": {
+          "type": "string",
+          "description": "Time the reminder should trigger (e.g., 08:00, 12:00, 20:00)."
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of reminder (e.g., Morning, Afternoon, Night, Custom)."
+        }
+      },
+      "required": [
+        "id",
+        "dosageId",
+        "time",
+        "type"
+      ]
+    },
+    "Refill": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Refill",
+      "type": "object",
+      "description": "Represents the user's medicine inventory and refill information.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the refill entry."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to UserProfile. (Relationship: UserProfile 1:N Refill)"
+        },
+        "medicineName": {
+          "type": "string",
+          "description": "Name of the medicine."
+        },
+        "totalQuantity": {
+          "type": "number",
+          "description": "Total quantity of the medicine initially."
+        },
+        "remainingQuantity": {
+          "type": "number",
+          "description": "Remaining quantity of the medicine."
+        },
+        "lowStockThreshold": {
+          "type": "number",
+          "description": "Quantity at which a low-stock warning should be triggered."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "medicineName",
+        "totalQuantity",
+        "remainingQuantity",
+        "lowStockThreshold"
+      ]
+    },
+    "Feedback": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Feedback",
+      "type": "object",
+      "description": "Represents user feedback submitted through the application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the feedback entry."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to UserProfile. (Relationship: UserProfile 1:N Feedback)"
+        },
+        "email": {
+          "type": "string",
+          "description": "User's email address (optional).",
+          "format": "email"
+        },
+        "message": {
+          "type": "string",
+          "description": "User's feedback message."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Timestamp of when the feedback was submitted.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "message",
+        "timestamp"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}/profile",
+        "definition": {
+          "entityName": "UserProfile",
+          "schema": {
+            "$ref": "#/backend/entities/UserProfile"
+          },
+          "description": "Stores user profile information. Each user has their own profile document.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/dosage/{dosageId}",
+        "definition": {
+          "entityName": "Dosage",
+          "schema": {
+            "$ref": "#/backend/entities/Dosage"
+          },
+          "description": "Stores dosage information for each user. Includes denormalized 'userId' to guarantee ownership.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "dosageId",
+              "description": "The unique identifier for the dosage entry."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/reminders/{reminderId}",
+        "definition": {
+          "entityName": "Reminder",
+          "schema": {
+            "$ref": "#/backend/entities/Reminder"
+          },
+          "description": "Stores reminder information for each user. Includes denormalized 'userId' (from parent 'dosage') to guarantee ownership.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "reminderId",
+              "description": "The unique identifier for the reminder."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/refills/{refillId}",
+        "definition": {
+          "entityName": "Refill",
+          "schema": {
+            "$ref": "#/backend/entities/Refill"
+          },
+          "description": "Stores refill information for each user. Includes denormalized 'userId' to guarantee ownership.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "refillId",
+              "description": "The unique identifier for the refill entry."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/feedback/{feedbackId}",
+        "definition": {
+          "entityName": "Feedback",
+          "schema": {
+            "$ref": "#/backend/entities/Feedback"
+          },
+          "description": "Stores feedback information for each user. Includes denormalized 'userId' to guarantee ownership.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "feedbackId",
+              "description": "The unique identifier for the feedback entry."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to ensure data isolation for each user and straightforward security rules. It leverages path-based ownership for user-specific data, making rules simple and efficient.\n\nAuthorization Independence (CRITICAL): Each user's data is stored under their unique userId, such as `/users/{userId}/profile`, `/users/{userId}/dosage/{dosageId}`, etc. This eliminates the need for `get()` calls in security rules because access control is determined solely by the user's ID in `request.auth.uid` matching the `userId` in the path. There is no hierarchical authorization dependencies.\n\nClarity of Intent (Debuggability): The structure makes the intent clear. All data under `/users/{userId}` is owned by that user.\n\nDBAC (No Custom Claims): Authorization depends solely on `request.auth.uid` matching the user ID in the path. Roles are not used.\n\nQAPs (Rules are not Filters): The structure enables secure `list` operations. Since each user's data is isolated under their `userId`, listing documents under `/users/{userId}/dosage` will only return dosages owned by that user, without needing complex filtering in rules. This is achieved through structural segregation.\n\nInvariants: The structure supports the integrity of ownership. The `userId` in documents like `Dosage`, `Refill`, and `Feedback` always matches the `userId` in the path, maintaining ownership.\n"
+  }
+}

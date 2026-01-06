@@ -1,0 +1,141 @@
+/**
+ * Core Philosophy: This ruleset enforces a strict user-ownership model where all data is isolated within a user-specific data tree. The security model is entirely path-based, ensuring that a user can only ever access documents located under their own unique user ID (`/users/{userId}`). This approach is highly secure, performant, and easy to maintain.
+ *
+ * Data Structure: All application data is organized hierarchically under the `/users/{userId}` path. Each user's data, including their profile, dosages, reminders, refills, and feedback, is stored in separate subcollections within their own document space. This structural segregation is the foundation of the security model.
+ *
+ * Key Security Decisions:
+ * - Strict Data Isolation: Users are completely siloed. There is no concept of shared or public data. A user's authentication token (`request.auth.uid`) is the sole key to their data tree.
+ * - No User Enumeration: Listing the top-level `/users` collection is explicitly forbidden to prevent leaking user IDs. Direct access to the parent `/users/{userId}` document is also disallowed, as all data is contained in subcollections.
+ * - Ownership-Based Writes: All write operations (create, update, delete) are strictly limited to the owner of the data.
+ * - Flexible Data Schema: In this prototyping phase, the rules focus on authorization (who can access what) rather than data validation (the exact shape of the data). Only fields critical for maintaining ownership links (e.g., `userId`, `id`) are validated on write.
+ *
+ * Denormalization for Authorization: The data model is designed around security rules. All user-specific subcollections are nested under `/users/{userId}`, which makes ownership checks trivial and fast, eliminating the need for any costly `get()` calls to other documents for authorization decisions.
+ *
+ * Structural Segregation: The entire data model uses structural segregation by design. Each user's private data is stored under their unique path, which is the most secure and performant way to handle private, user-scoped data and associated list queries.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ----------------------------------------------------------------------
+    // Helper Functions
+    // ----------------------------------------------------------------------
+
+    /**
+     * Checks if the user is authenticated.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * Checks if the currently authenticated user is the owner of the document,
+     * based on the userId wildcard from the path.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * Checks if the user is the owner AND the document already exists.
+     * Used for safe update and delete operations.
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+
+    // ----------------------------------------------------------------------
+    // User Data Scoping Rules
+    // ----------------------------------------------------------------------
+
+    /**
+     * @description Disallows any direct access to the parent user documents. This prevents listing all users and modifying the root document directly. All data must be accessed via subcollections.
+     * @path /users/{userId}
+     * @allow (none)
+     * @deny A user (`auth.uid: 'user-abc'`) trying to `get` or `list` the `/users` collection.
+     * @principle Prevents user enumeration and enforces data access through defined subcollection paths only.
+     */
+    match /users/{userId} {
+      allow get: if false;
+      allow list: if false;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    /**
+     * @description Secures a user's profile document. Only the owner can read or write their own profile.
+     * @path /users/{userId}/profile/{profileId}
+     * @allow An authenticated user (`auth.uid: 'user-abc'`) can `create` their own profile at `/users/user-abc/profile/some-doc-id`.
+     * @deny A different user (`auth.uid: 'user-xyz'`) trying to `get` the profile at `/users/user-abc/profile/some-doc-id`.
+     * @principle Enforces strict data ownership for a user's private information.
+     */
+    match /users/{userId}/profile/{profileId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Secures a user's dosage entries. Only the owner can create, read, update, or delete their own dosage records.
+     * @path /users/{userId}/dosage/{dosageId}
+     * @allow An authenticated user (`auth.uid: 'user-abc'`) can `list` all documents at `/users/user-abc/dosage`.
+     * @deny A user trying to `create` a dosage entry where the `userId` field in the data does not match their `auth.uid`.
+     * @principle Restricts access to a user's own data tree and validates relational integrity on write.
+     */
+    match /users/{userId}/dosage/{dosageId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.userId == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Secures a user's reminders. Only the owner can manage their reminders.
+     * @path /users/{userId}/reminders/{reminderId}
+     * @allow An authenticated user (`auth.uid: 'user-abc'`) can `delete` a reminder at `/users/user-abc/reminders/some-reminder-id`.
+     * @deny An anonymous user trying to `get` any reminder.
+     * @principle Enforces strict data ownership for a user's private information.
+     */
+    match /users/{userId}/reminders/{reminderId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Secures a user's medicine refill and inventory data. Only the owner can manage this information.
+     * @path /users/{userId}/refills/{refillId}
+     * @allow An authenticated user (`auth.uid: 'user-abc'`) can `update` a refill record at `/users/user-abc/refills/some-refill-id`.
+     * @deny A different user (`auth.uid: 'user-xyz'`) trying to `list` refills at `/users/user-abc/refills`.
+     * @principle Restricts access to a user's own data tree and validates relational integrity on write.
+     */
+    match /users/{userId}/refills/{refillId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.userId == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Secures user-submitted feedback. A user can create their own feedback, but cannot read, update, or delete it after submission.
+     * @path /users/{userId}/feedback/{feedbackId}
+     * @allow An authenticated user (`auth.uid: 'user-abc'`) can `create` a feedback document at `/users/user-abc/feedback/some-feedback-id`.
+     * @deny A user trying to `get` or `list` any feedback, including their own, to ensure privacy.
+     * @principle Implements a "write-only" or "dropbox" model for a user's own data.
+     */
+    match /users/{userId}/feedback/{feedbackId} {
+      allow get: if false;
+      allow list: if false;
+      allow create: if isOwner(userId) && request.resource.data.userId == userId;
+      allow update: if false;
+      allow delete: if false;
+    }
+  }
+}
