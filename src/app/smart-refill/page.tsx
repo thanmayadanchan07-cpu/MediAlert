@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useAuth } from '@/context/AuthContext';
+import { useMemo, useState } from 'react';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection, doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
@@ -10,7 +11,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { addRefillItem, getRefillItems, updateRefillItem, deleteRefillItem, type RefillItem } from '@/lib/firebase/firestore';
+import { addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase';
+import type { RefillItem } from '@/lib/firebase/firestore';
 import { getPersonalizedRefillSuggestion, type PersonalizedRefillSuggestionOutput } from '@/ai/flows/personalized-refill-suggestions';
 import { useToast } from '@/hooks/use-toast';
 import { PlusCircle, Box, Trash2, Edit, Loader2, PackageSearch, Package, ExternalLink, Sparkles } from 'lucide-react';
@@ -43,10 +45,15 @@ const suggestionSchema = z.object({
 const LOW_STOCK_THRESHOLD = 0.2; // 20%
 
 export default function SmartRefillPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, isUserLoading } = useUser();
+  const firestore = useFirestore();
   const { toast } = useToast();
-  const [refillItems, setRefillItems] = useState<RefillItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  
+  const refillItemsQuery = useMemoFirebase(() => 
+    user ? collection(firestore, 'users', user.uid, 'refill') : null
+  , [user, firestore]);
+  const { data: refillItems, isLoading: itemsLoading } = useCollection<RefillItem>(refillItemsQuery);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<RefillItem | null>(null);
@@ -64,25 +71,6 @@ export default function SmartRefillPage() {
     defaultValues: { medication: '', location: '' },
   });
 
-  const fetchRefillItems = async () => {
-    if (!user) return;
-    setIsLoading(true);
-    try {
-      const querySnapshot = await getRefillItems(user.uid);
-      const items = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as RefillItem[];
-      setRefillItems(items);
-    } catch (error) {
-      toast({ title: 'Error fetching inventory', description: 'Could not load your medicine stock.', variant: 'destructive' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (user) fetchRefillItems();
-    else if (!authLoading) setIsLoading(false);
-  }, [user, authLoading]);
-
   const handleDialogOpen = (item: RefillItem | null = null) => {
     setEditingItem(item);
     refillForm.reset(item ? { ...item } : { name: '', totalQuantity: 10, remainingQuantity: 10 });
@@ -92,15 +80,16 @@ export default function SmartRefillPage() {
   const onRefillSubmit = async (values: z.infer<typeof refillSchema>) => {
     if (!user) return;
     setIsSubmitting(true);
+    const collectionRef = collection(firestore, 'users', user.uid, 'refill');
     try {
       if (editingItem) {
-        await updateRefillItem(user.uid, editingItem.id!, values);
+        const docRef = doc(collectionRef, editingItem.id!);
+        updateDocumentNonBlocking(docRef, values);
         toast({ title: 'Success', description: 'Inventory updated.' });
       } else {
-        await addRefillItem(user.uid, values);
+        addDocumentNonBlocking(collectionRef, values);
         toast({ title: 'Success', description: 'New medicine added to inventory.' });
       }
-      await fetchRefillItems();
       setIsDialogOpen(false);
     } catch (error) {
       toast({ title: 'Error', description: 'Could not save the item.', variant: 'destructive' });
@@ -111,10 +100,10 @@ export default function SmartRefillPage() {
 
   const onDelete = async (itemId: string) => {
     if (!user) return;
+    const docRef = doc(firestore, 'users', user.uid, 'refill', itemId);
     try {
-      await deleteRefillItem(user.uid, itemId);
+      deleteDocumentNonBlocking(docRef);
       toast({ title: 'Item removed', description: 'The item has been deleted from your inventory.' });
-      fetchRefillItems();
     } catch {
       toast({ title: 'Error', description: 'Could not delete the item.', variant: 'destructive' });
     }
@@ -143,7 +132,7 @@ export default function SmartRefillPage() {
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button onClick={() => handleDialogOpen()} disabled={!user || authLoading}>
+              <Button onClick={() => handleDialogOpen()} disabled={!user || isUserLoading}>
                 <PlusCircle className="mr-2 h-4 w-4" /> Add Item
               </Button>
             </DialogTrigger>
@@ -165,9 +154,9 @@ export default function SmartRefillPage() {
           </Dialog>
         </div>
         {/* Inventory list display */}
-        {authLoading || isLoading ? <div className="h-24 bg-muted rounded-lg animate-pulse" />
+        {isUserLoading || itemsLoading ? <div className="h-24 bg-muted rounded-lg animate-pulse" />
         : !user ? <Card className="text-center py-12"><CardHeader><CardTitle>Log in to track inventory</CardTitle></CardHeader></Card>
-        : refillItems.length === 0 ? (
+        : refillItems && refillItems.length === 0 ? (
           <Card className="text-center py-12 flex flex-col items-center">
             <Package className="w-16 h-16 text-muted-foreground/50 mb-4" />
             <CardHeader>
@@ -177,7 +166,7 @@ export default function SmartRefillPage() {
           </Card>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {refillItems.map(item => {
+            {refillItems && refillItems.map(item => {
               const percentage = item.totalQuantity > 0 ? (item.remainingQuantity / item.totalQuantity) * 100 : 0;
               const isLowStock = percentage / 100 <= LOW_STOCK_THRESHOLD;
               return (

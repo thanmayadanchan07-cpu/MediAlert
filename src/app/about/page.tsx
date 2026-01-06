@@ -3,10 +3,9 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useAuth } from '@/context/AuthContext';
+import { useUser, useFirestore, addDocumentNonBlocking } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
-import { addFeedback } from '@/lib/firebase/firestore';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -16,6 +15,7 @@ import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
+import { collection } from 'firebase/firestore';
 
 const feedbackSchema = z.object({
   message: z.string().min(10, 'Message must be at least 10 characters.'),
@@ -43,7 +43,8 @@ const faqItems = [
 const peopleImages = PlaceHolderImages.filter(img => img.id.startsWith('person-'));
 
 export default function AboutPage() {
-  const { user } = useAuth();
+  const { user } = useUser();
+  const firestore = useFirestore();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -59,7 +60,8 @@ export default function AboutPage() {
     }
     setIsSubmitting(true);
     try {
-      await addFeedback(user.uid, { email: user.email, message: values.message });
+      const feedbackCollectionRef = collection(firestore, 'users', user.uid, 'feedback');
+      addDocumentNonBlocking(feedbackCollectionRef, { email: user.email, message: values.message, userId: user.uid, timestamp: new Date().toISOString() });
       toast({ title: 'Feedback Sent!', description: "Thank you for helping us improve." });
       form.reset();
     } catch (error) {

@@ -4,12 +4,16 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { signInOrSignUp } from '@/lib/firebase/auth';
+import { useAuth } from '@/firebase';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, AuthError } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
+import { useFirestore } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import { setDocumentNonBlocking } from '@/firebase';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email.' }),
@@ -19,6 +23,8 @@ const formSchema = z.object({
 export default function LoginForm() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const auth = useAuth();
+  const firestore = useFirestore();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -30,17 +36,40 @@ export default function LoginForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
-    const result = await signInOrSignUp(values.email, values.password);
-    setLoading(false);
-
-    if (!result.success) {
-      toast({
-        title: 'Authentication Failed',
-        description: result.error,
-        variant: 'destructive',
-      });
+    try {
+      await signInWithEmailAndPassword(auth, values.email, values.password);
+      // On success, the AuthProvider handles the state change, and the UI will update automatically.
+    } catch (error) {
+      const authError = error as AuthError;
+      if (authError.code === 'auth/user-not-found' || authError.code === 'auth/invalid-credential') {
+        try {
+          const newUserCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
+          const profileRef = doc(firestore, 'users', newUserCredential.user.uid, 'profile', 'data');
+          setDocumentNonBlocking(profileRef, { email: newUserCredential.user.email }, { merge: true });
+        } catch (createError) {
+          const createAuthError = createError as AuthError;
+          toast({
+            title: 'Authentication Failed',
+            description: createAuthError.message,
+            variant: 'destructive',
+          });
+        }
+      } else {
+        let friendlyMessage = 'An unknown error occurred.';
+        if (authError.code === 'auth/wrong-password') {
+            friendlyMessage = 'Incorrect password. Please try again.';
+        } else if (authError.code === 'auth/invalid-email') {
+            friendlyMessage = 'The email address is not valid.';
+        }
+        toast({
+          title: 'Authentication Failed',
+          description: friendlyMessage,
+          variant: 'destructive',
+        });
+      }
+    } finally {
+        setLoading(false);
     }
-    // On success, the AuthProvider handles the state change, and the UI will update automatically.
   }
 
   return (

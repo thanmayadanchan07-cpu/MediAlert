@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { AuthProvider } from '@/context/AuthContext';
+import { FirebaseClientProvider } from '@/firebase';
 import Header from '@/components/Header';
 import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
@@ -25,11 +25,11 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased bg-background text-foreground min-h-screen flex flex-col">
-        <AuthProvider>
+        <FirebaseClientProvider>
           <Header />
           <main className="flex-grow container mx-auto px-4 py-8">{children}</main>
           <Toaster />
-        </AuthProvider>
+        </FirebaseClientProvider>
       </body>
     </html>
   );

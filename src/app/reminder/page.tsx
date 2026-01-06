@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useAuth } from '@/context/AuthContext';
+import { useMemo, useState } from 'react';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection, doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
@@ -11,7 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { addReminder, getReminders, deleteReminder, type Reminder } from '@/lib/firebase/firestore';
+import { addDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase';
+import type { Reminder } from '@/lib/firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { PlusCircle, Bell, Trash2, Loader2, BellRing } from 'lucide-react';
 import {
@@ -33,10 +35,15 @@ const reminderSchema = z.object({
 });
 
 export default function ReminderPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, isUserLoading } = useUser();
+  const firestore = useFirestore();
   const { toast } = useToast();
-  const [reminders, setReminders] = useState<Reminder[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+
+  const remindersQuery = useMemoFirebase(() =>
+    user ? collection(firestore, 'users', user.uid, 'reminders') : null
+  , [user, firestore]);
+  const { data: reminders, isLoading: remindersLoading } = useCollection<Reminder>(remindersQuery);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -45,39 +52,16 @@ export default function ReminderPage() {
     defaultValues: { medicineName: '', time: '', type: 'Morning' },
   });
 
-  const fetchReminders = async () => {
-    if (!user) return;
-    setIsLoading(true);
-    try {
-      const querySnapshot = await getReminders(user.uid);
-      const userReminders = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Reminder[];
-      setReminders(userReminders);
-    } catch (error) {
-      toast({ title: 'Error fetching reminders', description: 'Could not load your reminder list.', variant: 'destructive' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (user) {
-      fetchReminders();
-    } else if (!authLoading) {
-      setIsLoading(false);
-      setReminders([]);
-    }
-  }, [user, authLoading]);
-
   const onSubmit = async (values: z.infer<typeof reminderSchema>) => {
     if (!user) {
       toast({ title: 'Not authenticated', description: 'You must be logged in to manage reminders.', variant: 'destructive' });
       return;
     }
     setIsSubmitting(true);
+    const collectionRef = collection(firestore, 'users', user.uid, 'reminders');
     try {
-      await addReminder(user.uid, values as Omit<Reminder, 'id'>);
+      addDocumentNonBlocking(collectionRef, values as Omit<Reminder, 'id'>);
       toast({ title: 'Success', description: 'New reminder set.' });
-      await fetchReminders();
       setIsDialogOpen(false);
       form.reset();
     } catch (error) {
@@ -89,10 +73,10 @@ export default function ReminderPage() {
   
   const handleDelete = async (reminderId: string) => {
     if (!user) return;
+    const docRef = doc(firestore, 'users', user.uid, 'reminders', reminderId);
     try {
-      await deleteReminder(user.uid, reminderId);
+      deleteDocumentNonBlocking(docRef);
       toast({ title: 'Reminder removed', description: 'The reminder has been deleted.' });
-      fetchReminders();
     } catch {
       toast({ title: 'Error', description: 'Could not delete the reminder.', variant: 'destructive' });
     }
@@ -107,7 +91,7 @@ export default function ReminderPage() {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button disabled={!user || authLoading} onClick={() => setIsDialogOpen(true)}>
+            <Button disabled={!user || isUserLoading} onClick={() => setIsDialogOpen(true)}>
               <PlusCircle className="mr-2 h-4 w-4" />
               Set Reminder
             </Button>
@@ -162,7 +146,7 @@ export default function ReminderPage() {
         </Dialog>
       </div>
 
-      {authLoading || isLoading ? (
+      {isUserLoading || remindersLoading ? (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
            {[...Array(3)].map((_, i) => <Card key={i}><CardHeader><div className="h-6 bg-muted rounded w-1/2"></div></CardHeader><CardContent><div className="h-4 bg-muted rounded w-full"></div></CardContent></Card>)}
         </div>
@@ -173,7 +157,7 @@ export default function ReminderPage() {
             <CardDescription>Please log in to set and manage your reminders.</CardDescription>
           </CardHeader>
         </Card>
-      ) : reminders.length === 0 ? (
+      ) : reminders && reminders.length === 0 ? (
         <Card className="text-center py-12 flex flex-col items-center">
             <BellRing className="w-16 h-16 text-muted-foreground/50 mb-4" />
           <CardHeader>
@@ -183,7 +167,7 @@ export default function ReminderPage() {
         </Card>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {reminders.map((reminder) => (
+          {reminders && reminders.map((reminder) => (
             <Card key={reminder.id} className="flex flex-col">
               <CardHeader className="flex-row items-center gap-4">
                 <div className="bg-secondary p-3 rounded-full"><Bell className="h-6 w-6 text-primary" /></div>

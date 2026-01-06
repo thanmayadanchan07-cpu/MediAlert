@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useAuth } from '@/context/AuthContext';
+import { useMemo, useState } from 'react';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection, doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
@@ -10,7 +11,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { addDosage, getDosages, updateDosage, deleteDosage, type Dosage } from '@/lib/firebase/firestore';
+import { addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase';
+import type { Dosage } from '@/lib/firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { PlusCircle, Pill, Trash2, Edit, X, Loader2, FileText } from 'lucide-react';
 import {
@@ -32,10 +34,15 @@ const dosageSchema = z.object({
 });
 
 export default function DosagePage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, isUserLoading } = useUser();
+  const firestore = useFirestore();
   const { toast } = useToast();
-  const [dosages, setDosages] = useState<Dosage[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  
+  const dosagesQuery = useMemoFirebase(() => 
+    user ? collection(firestore, 'users', user.uid, 'dosage') : null
+  , [user, firestore]);
+  const { data: dosages, isLoading: dosagesLoading } = useCollection<Dosage>(dosagesQuery);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingDosage, setEditingDosage] = useState<Dosage | null>(null);
@@ -44,29 +51,6 @@ export default function DosagePage() {
     resolver: zodResolver(dosageSchema),
     defaultValues: { name: '', quantity: '', time: '' },
   });
-
-  const fetchDosages = async () => {
-    if (!user) return;
-    setIsLoading(true);
-    try {
-      const querySnapshot = await getDosages(user.uid);
-      const userDosages = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Dosage[];
-      setDosages(userDosages);
-    } catch (error) {
-      toast({ title: 'Error fetching dosages', description: 'Could not load your medication list.', variant: 'destructive' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (user) {
-      fetchDosages();
-    } else if (!authLoading) {
-      setIsLoading(false);
-      setDosages([]);
-    }
-  }, [user, authLoading]);
 
   const handleDialogOpen = (dosage: Dosage | null = null) => {
     setEditingDosage(dosage);
@@ -84,15 +68,18 @@ export default function DosagePage() {
       return;
     }
     setIsSubmitting(true);
+    
+    const collectionRef = collection(firestore, 'users', user.uid, 'dosage');
+
     try {
       if (editingDosage) {
-        await updateDosage(user.uid, editingDosage.id!, values);
+        const docRef = doc(collectionRef, editingDosage.id!);
+        updateDocumentNonBlocking(docRef, values);
         toast({ title: 'Success', description: 'Dosage updated successfully.' });
       } else {
-        await addDosage(user.uid, values);
+        addDocumentNonBlocking(collectionRef, values);
         toast({ title: 'Success', description: 'New dosage added.' });
       }
-      await fetchDosages();
       setIsDialogOpen(false);
     } catch (error) {
       toast({ title: 'Error', description: 'Could not save the dosage.', variant: 'destructive' });
@@ -104,9 +91,9 @@ export default function DosagePage() {
   const handleDelete = async (dosageId: string) => {
     if (!user) return;
     try {
-      await deleteDosage(user.uid, dosageId);
+      const docRef = doc(firestore, 'users', user.uid, 'dosage', dosageId);
+      deleteDocumentNonBlocking(docRef);
       toast({ title: 'Dosage removed', description: 'The medication has been deleted from your list.' });
-      fetchDosages();
     } catch {
       toast({ title: 'Error', description: 'Could not delete the dosage.', variant: 'destructive' });
     }
@@ -121,7 +108,7 @@ export default function DosagePage() {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => handleDialogOpen()} disabled={!user || authLoading}>
+            <Button onClick={() => handleDialogOpen()} disabled={!user || isUserLoading}>
               <PlusCircle className="mr-2 h-4 w-4" />
               Add Dosage
             </Button>
@@ -166,7 +153,7 @@ export default function DosagePage() {
         </Dialog>
       </div>
 
-      {authLoading || isLoading ? (
+      {isUserLoading || dosagesLoading ? (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(3)].map((_, i) => <Card key={i}><CardHeader><div className="h-6 bg-muted rounded w-1/2"></div></CardHeader><CardContent><div className="h-4 bg-muted rounded w-full"></div><div className="h-4 bg-muted rounded w-3/4 mt-2"></div></CardContent></Card>)}
         </div>
@@ -177,7 +164,7 @@ export default function DosagePage() {
             <CardDescription>Please log in to start tracking your medication.</CardDescription>
           </CardHeader>
         </Card>
-      ) : dosages.length === 0 ? (
+      ) : dosages && dosages.length === 0 ? (
         <Card className="text-center py-12 flex flex-col items-center">
             <FileText className="w-16 h-16 text-muted-foreground/50 mb-4" />
           <CardHeader>
@@ -187,7 +174,7 @@ export default function DosagePage() {
         </Card>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {dosages.map((dosage) => (
+          {dosages && dosages.map((dosage) => (
             <Card key={dosage.id} className="flex flex-col">
               <CardHeader className="flex-row items-center gap-4">
                 <div className="bg-secondary p-3 rounded-full"><Pill className="h-6 w-6 text-primary" /></div>

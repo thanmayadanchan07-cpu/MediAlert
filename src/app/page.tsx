@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useAuth } from '@/context/AuthContext';
+import { useUser } from '@/firebase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -34,7 +34,7 @@ const features = [
 const homeIllustration = PlaceHolderImages.find(img => img.id === 'home-illustration');
 
 export default function Home() {
-  const { user, loading } = useAuth();
+  const { user, isUserLoading } = useUser();
 
   const WelcomeSection = () => (
     <div className="text-center">
@@ -66,7 +66,7 @@ export default function Home() {
           <CardContent className="p-0">
             <div className="grid md:grid-cols-2 items-center">
               <div className="p-8 md:p-12 order-2 md:order-1">
-                {loading ? (
+                {isUserLoading ? (
                   <div className="space-y-4 max-w-sm mx-auto">
                     <Skeleton className="h-10 w-3/4" />
                     <Skeleton className="h-6 w-full" />

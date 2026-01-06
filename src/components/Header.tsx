@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Pill, LogOut, Menu } from 'lucide-react';
-import { useAuth } from '@/context/AuthContext';
-import { signOutUser } from '@/lib/firebase/auth';
+import { useUser, useAuth } from '@/firebase';
+import { signOut } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -32,11 +32,12 @@ const navLinks = [
 
 export default function Header() {
   const pathname = usePathname();
-  const { user, loading } = useAuth();
+  const { user, isUserLoading } = useUser();
+  const auth = useAuth();
   const [isSheetOpen, setIsSheetOpen] = React.useState(false);
 
   const handleLogout = async () => {
-    await signOutUser();
+    await signOut(auth);
   };
 
   const NavLink = ({ href, children }: { href: string, children: React.ReactNode }) => (
@@ -65,7 +66,7 @@ export default function Header() {
           ))}
         </nav>
         <div className="flex items-center gap-4">
-          {!loading && user ? (
+          {!isUserLoading && user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Avatar className="cursor-pointer h-10 w-10 border-2 border-primary/50">
