@@ -3,6 +3,7 @@ import { FirebaseClientProvider } from '@/firebase';
 import Header from '@/components/Header';
 import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
+import { ReminderNotificationHandler } from '@/components/ReminderNotificationHandler';
 
 export const metadata: Metadata = {
   title: 'MediAlert',
@@ -29,6 +30,7 @@ export default function RootLayout({
           <Header />
           <main className="flex-grow container mx-auto px-4 py-8">{children}</main>
           <Toaster />
+          <ReminderNotificationHandler />
         </FirebaseClientProvider>
       </body>
     </html>

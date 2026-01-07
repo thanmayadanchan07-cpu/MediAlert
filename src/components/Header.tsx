@@ -25,7 +25,6 @@ import React from 'react';
 const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/dosage', label: 'Dosage' },
-  { href: '/reminder', label: 'Reminder' },
   { href: '/smart-refill', label: 'Smart Refill' },
   { href: '/about', label: 'About' },
 ];

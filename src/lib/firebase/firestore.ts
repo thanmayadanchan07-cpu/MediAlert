@@ -20,7 +20,9 @@ export interface Dosage {
   dosages: {
     time: 'Morning' | 'Afternoon' | 'Night';
     quantity: string;
+    reminderTime: string;
   }[];
+  userId: string;
 }
 
 export const addDosage = (userId: string, dosage: Omit<Dosage, 'id'>) => {
@@ -46,6 +48,8 @@ export interface Reminder {
     medicineName: string;
     time: string;
     type: 'Morning' | 'Afternoon' | 'Night';
+    quantity: string;
+    dosageId: string;
 }
 
 export const addReminder = (userId: string, reminder: Omit<Reminder, 'id'>) => {
