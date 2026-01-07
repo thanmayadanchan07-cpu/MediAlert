@@ -195,6 +195,7 @@ export default function SmartRefillPage() {
               ];
 
               const chartColor = isLowStock ? '#ef4444' : '#22c55e';
+              const usedColor = isLowStock ? '#ffffff' : 'hsl(var(--muted))';
 
               return (
                 <Card key={item.id} className="flex flex-col">
@@ -222,7 +223,7 @@ export default function SmartRefillPage() {
                             stroke="none"
                             >
                                 <Cell key="remaining" fill={chartColor} />
-                                <Cell key="used" fill="hsl(var(--muted))" />
+                                <Cell key="used" fill={usedColor} />
                             </Pie>
                         </PieChart>
                          <div className="absolute inset-0 flex items-center justify-center flex-col">
