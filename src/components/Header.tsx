@@ -41,9 +41,10 @@ export default function Header() {
     setIsClient(true);
   }, []);
 
-
   const handleLogout = async () => {
-    await signOut(auth);
+    if (auth) {
+      await signOut(auth);
+    }
   };
 
   const NavLink = ({ href, children }: { href: string, children: React.ReactNode }) => (
