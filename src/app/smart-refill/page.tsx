@@ -18,7 +18,6 @@ import type { RefillItem } from '@/lib/firebase/firestore';
 import { getPersonalizedRefillSuggestion, type PersonalizedRefillSuggestionOutput } from '@/ai/flows/personalized-refill-suggestions';
 import { useToast } from '@/hooks/use-toast';
 import { PlusCircle, Box, Trash2, Edit, Loader2, PackageSearch, Package, ExternalLink, Sparkles } from 'lucide-react';
-import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -32,7 +31,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
+import { PieChart, Pie, Cell } from 'recharts';
 
 const refillSchema = z.object({
   name: z.string().min(1, 'Medicine name is required.'),
@@ -186,22 +186,53 @@ export default function SmartRefillPage() {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {refillItems && refillItems.map(item => {
-              const percentage = item.totalQuantity > 0 ? (item.remainingQuantity / item.totalQuantity) * 100 : 0;
-              const isLowStock = percentage / 100 <= LOW_STOCK_THRESHOLD;
+              const percentage = item.totalQuantity > 0 ? (item.remainingQuantity / item.totalQuantity) : 0;
+              const isLowStock = percentage <= LOW_STOCK_THRESHOLD;
+
+              const chartData = [
+                { name: 'Remaining', value: item.remainingQuantity },
+                { name: 'Used', value: item.totalQuantity - item.remainingQuantity },
+              ];
+
+              const chartColor = isLowStock ? 'hsl(var(--destructive))' : 'hsl(var(--chart-2))';
+
               return (
-                <Card key={item.id}>
+                <Card key={item.id} className="flex flex-col">
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <div>
                         <CardTitle className="font-headline text-xl">{item.name}</CardTitle>
-                        <CardDescription>{item.remainingQuantity} / {item.totalQuantity} units remaining</CardDescription>
+                        <CardDescription>{item.remainingQuantity} / {item.totalQuantity} units left</CardDescription>
                       </div>
                       {isLowStock && <Badge variant="destructive">Low Stock</Badge>}
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <Progress value={percentage} className="h-3" />
-                    <div className="flex justify-end gap-2 mt-4">
+                  <CardContent className="flex-grow flex flex-col items-center justify-center relative">
+                    <div className="relative w-32 h-32">
+                        <PieChart width={128} height={128}>
+                            <Pie
+                            data={chartData}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={40}
+                            outerRadius={60}
+                            dataKey="value"
+                            startAngle={90}
+                            endAngle={450}
+                            stroke="none"
+                            >
+                                <Cell key="remaining" fill={chartColor} />
+                                <Cell key="used" fill="hsl(var(--muted))" />
+                            </Pie>
+                        </PieChart>
+                         <div className="absolute inset-0 flex items-center justify-center flex-col">
+                            <span className="text-2xl font-bold">
+                                {Math.round(percentage * 100)}%
+                            </span>
+                        </div>
+                    </div>
+                  </CardContent>
+                  <CardContent className="flex justify-end gap-2">
                       <Button variant="ghost" size="icon" onClick={() => handleDialogOpen(item)}><Edit className="h-4 w-4" /></Button>
                       <AlertDialog><AlertDialogTrigger asChild><Button variant="ghost" size="icon" className="text-destructive hover:text-destructive"><Trash2 className="h-4 w-4" /></Button></AlertDialogTrigger>
                         <AlertDialogContent>
@@ -209,7 +240,6 @@ export default function SmartRefillPage() {
                           <AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={() => onDelete(item.id!)} className="bg-destructive hover:bg-destructive/90">Delete</AlertDialogAction></AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
-                    </div>
                   </CardContent>
                 </Card>
               );
