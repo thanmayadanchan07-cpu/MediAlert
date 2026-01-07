@@ -258,18 +258,18 @@ export default function ReminderPage() {
         </Dialog>
       </div>
 
-        {reminderIllustration && (
-            <div className="mb-12 rounded-lg overflow-hidden shadow-lg">
-                <Image
-                    src={reminderIllustration.imageUrl}
-                    alt={reminderIllustration.description}
-                    width={1080}
-                    height={400}
-                    className="w-full h-64 object-cover"
-                    data-ai-hint={reminderIllustration.imageHint}
-                />
-            </div>
-        )}
+      {reminderIllustration && (
+          <div className="mb-12 rounded-lg overflow-hidden shadow-lg">
+              <Image
+                  src={reminderIllustration.imageUrl}
+                  alt={reminderIllustration.description}
+                  width={1080}
+                  height={400}
+                  className="w-full h-64 object-cover"
+                  data-ai-hint={reminderIllustration.imageHint}
+              />
+          </div>
+      )}
 
       {isUserLoading || remindersLoading ? (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
