@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -35,12 +36,11 @@ export default function Header() {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const [isSheetOpen, setIsSheetOpen] = React.useState(false);
-  const [isClient, setIsClient] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
+    setIsMounted(true);
   }, []);
-
 
   const handleLogout = async () => {
     if (auth) {
@@ -54,7 +54,7 @@ export default function Header() {
       onClick={() => setIsSheetOpen(false)}
       className={cn(
         'font-extrabold transition-colors hover:text-primary text-xl',
-        isClient && pathname === href ? 'text-primary' : 'text-foreground/60'
+        isMounted && pathname === href ? 'text-primary' : 'text-foreground/60'
       )}
     >
       {children}
