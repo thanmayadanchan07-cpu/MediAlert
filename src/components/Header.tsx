@@ -26,6 +26,7 @@ const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/dosage', label: 'Dosage' },
   { href: '/smart-refill', label: 'Smart Refill' },
+  { href: '/about', label: 'About' },
   { href: '/faq', label: 'FAQ' },
 ];
 
