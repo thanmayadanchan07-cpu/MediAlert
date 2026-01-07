@@ -57,6 +57,7 @@ export function ReminderNotificationHandler() {
 
   useEffect(() => {
     if (dueReminder && audio) {
+      audio.loop = true;
       audio.play().catch(e => console.error("Audio playback failed:", e));
     }
   }, [dueReminder, audio]);
@@ -72,6 +73,7 @@ export function ReminderNotificationHandler() {
     if (audio) {
       audio.pause();
       audio.currentTime = 0;
+      audio.loop = false;
     }
 
     // Delete from Firestore
