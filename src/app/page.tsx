@@ -83,14 +83,14 @@ export default function Home() {
                   </div>
                 )}
               </div>
-              <div className="order-1 md:order-2 bg-primary/10">
+              <div className="order-1 md:order-2 bg-primary/10 min-h-[300px] md:min-h-0 md:h-full">
                 {homeIllustration && (
                   <Image
                     src={homeIllustration.imageUrl}
                     alt={homeIllustration.description}
                     width={800}
                     height={600}
-                    className="w-full h-64 md:h-full object-cover"
+                    className="w-full h-full object-cover"
                     data-ai-hint={homeIllustration.imageHint}
                     priority
                   />
