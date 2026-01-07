@@ -20,7 +20,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { cn } from '@/lib/utils';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -35,6 +35,12 @@ export default function Header() {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const [isSheetOpen, setIsSheetOpen] = React.useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -46,7 +52,7 @@ export default function Header() {
       onClick={() => setIsSheetOpen(false)}
       className={cn(
         'font-extrabold transition-colors hover:text-primary text-xl',
-        pathname === href ? 'text-primary' : 'text-foreground/60'
+        isClient && pathname === href ? 'text-primary' : 'text-foreground/60'
       )}
     >
       {children}
