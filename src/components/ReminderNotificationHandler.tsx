@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, deleteDoc, doc } from 'firebase/firestore';
 import type { Reminder } from '@/lib/firebase/firestore';
@@ -28,17 +28,28 @@ export function ReminderNotificationHandler() {
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
 
   useEffect(() => {
-    // Initialize AudioContext on the client after the component mounts
-    // It must be created after a user interaction, but we can initialize it here.
-    // Playback will be triggered by a user action (dismissing the dialog).
-    // For autoplay to work, it often needs to be tied to the first user gesture on the page.
-    // We will attempt to play it when the dialog appears.
-    setAudioContext(new (window.AudioContext || (window as any).webkitAudioContext)());
-  }, []);
+    // Initialize AudioContext on the client after the component mounts.
+    // This is necessary for browsers that require user interaction to start audio.
+    const initializeAudio = () => {
+      if (!audioContext) {
+        setAudioContext(new (window.AudioContext || (window as any).webkitAudioContext)());
+      }
+      window.removeEventListener('click', initializeAudio);
+    };
+    
+    window.addEventListener('click', initializeAudio);
+
+    return () => {
+      window.removeEventListener('click', initializeAudio);
+    }
+  }, [audioContext]);
   
   const playBeep = () => {
     if (!audioContext) return;
     try {
+      if (audioContext.state === 'suspended') {
+        audioContext.resume();
+      }
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
   
