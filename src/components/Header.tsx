@@ -41,6 +41,7 @@ export default function Header() {
     setIsClient(true);
   }, []);
 
+
   const handleLogout = async () => {
     if (auth) {
       await signOut(auth);
