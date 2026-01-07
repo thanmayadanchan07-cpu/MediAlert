@@ -194,7 +194,7 @@ export default function SmartRefillPage() {
                 { name: 'Used', value: item.totalQuantity - item.remainingQuantity },
               ];
 
-              const chartColor = isLowStock ? 'hsl(var(--destructive))' : 'hsl(var(--chart-2))';
+              const chartColor = isLowStock ? '#ef4444' : '#22c55e';
 
               return (
                 <Card key={item.id} className="flex flex-col">
