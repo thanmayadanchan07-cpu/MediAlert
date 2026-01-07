@@ -23,12 +23,39 @@ export function ReminderNotificationHandler() {
   , [user, firestore]);
   const { data: reminders } = useCollection<Reminder>(remindersQuery);
   const [dueReminder, setDueReminder] = useState<Reminder | null>(null);
-  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
+
+  // Web Audio API context
+  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
 
   useEffect(() => {
-    // This effect runs only on the client
-    setAudio(new Audio('/beep.mp3'));
+    // Initialize AudioContext on the client after the component mounts
+    // It must be created after a user interaction, but we can initialize it here.
+    // Playback will be triggered by a user action (dismissing the dialog).
+    // For autoplay to work, it often needs to be tied to the first user gesture on the page.
+    // We will attempt to play it when the dialog appears.
+    setAudioContext(new (window.AudioContext || (window as any).webkitAudioContext)());
   }, []);
+  
+  const playBeep = () => {
+    if (!audioContext) return;
+    try {
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+  
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+  
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(800, audioContext.currentTime); // Hz
+      gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+  
+      oscillator.start();
+      oscillator.stop(audioContext.currentTime + 0.2); // Beep for 0.2 seconds
+    } catch (e) {
+      console.error("Audio playback failed:", e);
+    }
+  };
+
 
   useEffect(() => {
     if (!reminders || reminders.length === 0) {
@@ -56,11 +83,19 @@ export function ReminderNotificationHandler() {
   }, [reminders]);
 
   useEffect(() => {
-    if (dueReminder && audio) {
-      audio.loop = true;
-      audio.play().catch(e => console.error("Audio playback failed:", e));
+    let beepInterval: NodeJS.Timeout | null = null;
+    if (dueReminder && audioContext) {
+      // Play immediately and then every second
+      playBeep();
+      beepInterval = setInterval(playBeep, 1200);
     }
-  }, [dueReminder, audio]);
+    
+    return () => {
+      if (beepInterval) {
+        clearInterval(beepInterval);
+      }
+    }
+  }, [dueReminder, audioContext]);
 
   const handleDismiss = async () => {
     if (!dueReminder || !user) return;
@@ -69,12 +104,7 @@ export function ReminderNotificationHandler() {
     const dismissedReminder = dueReminder;
     setDueReminder(null);
 
-    // Stop audio
-    if (audio) {
-      audio.pause();
-      audio.currentTime = 0;
-      audio.loop = false;
-    }
+    // Note: Beeping stops automatically due to the useEffect cleanup
 
     // Delete from Firestore
     try {
