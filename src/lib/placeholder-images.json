@@ -3,7 +3,7 @@
     {
       "id": "home-illustration",
       "description": "A smartphone screen showing a notification alert for a medication reminder, with pills in the background, representing modern healthcare technology.",
-      "imageUrl": "https://images.unsplash.com/photo-1576091160550-2173dba999ef?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxoZWFsdGhjYXJlJTIwdGVhbXxlbnwwfHx8fDE3MjQzMzY4OTB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1576091160550-2173dba999ef?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxoZWFsdGhjYXJlJTIwdGVhbXxlbnwwfHx8fDE3MjQzMzY4OTB8MA&ixlib.rb-4.1.0&q=80&w=1080",
       "imageHint": "healthcare medical"
     },
     {
@@ -56,9 +56,9 @@
     },
     {
       "id": "reminder-illustration",
-      "description": "Close up on a smartphone screen showing a notification alert for a medication reminder, with pills in the background.",
-      "imageUrl": "https://images.unsplash.com/photo-1631507623095-c710d82f1938?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtZWRpY2F0aW9uJTIwcmVtaW5kZXIlMjBwaG9uZXxlbnwwfHx8fDE3MjY3MjgxNDJ8MA&ixlib.rb-4.1.0&q=80&w=1080",
-      "imageHint": "medication phone"
+      "description": "An alarm clock next to a bottle of pills, symbolizing a medicine reminder.",
+      "imageUrl": "https://images.unsplash.com/photo-1562993233-4a1f6a1523af?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtZWRpY2luZSUyMHJlbWluZGVyfGVufDB8fHx8MTcyMjMyNTI0Nnww&ixlib.rb-4.1.0&q=80&w=1080",
+      "imageHint": "medicine timer"
     },
     {
       "id": "refill-illustration",
