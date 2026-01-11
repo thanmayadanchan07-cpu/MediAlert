@@ -14,12 +14,12 @@ export default function AboutPage() {
         </p>
         <div className="mt-8 max-w-4xl mx-auto">
             <Image
-                src="https://images.unsplash.com/photo-1562993233-4a1f6a1523af?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtZWRpY2luZSUyMHJlbWluZGVyfGVufDB8fHx8MTcyMjMyNTI0Nnww&ixlib.rb-4.1.0&q=80&w=1080"
-                alt="An alarm clock next to a bottle of pills, symbolizing a medicine reminder."
+                src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxoZWFsdGhjYXJlJTIwdGVhbXxlbnwwfHx8fDE3MjQzMzY4OTB8MA&ixlib=rb-4.1.0&q=80&w=1080"
+                alt="A diverse group of healthcare professionals standing together in a modern hospital hallway."
                 width={1080}
                 height={720}
                 className="rounded-lg object-cover w-full h-auto"
-                data-ai-hint="medicine reminder"
+                data-ai-hint="healthcare team"
             />
         </div>
       </section>
