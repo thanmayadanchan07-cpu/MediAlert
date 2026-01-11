@@ -14,12 +14,12 @@ export default function AboutPage() {
         </p>
         <div className="mt-8 max-w-4xl mx-auto">
             <Image
-                src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxoZWFsdGhjYXJlJTIwdGVhbXxlbnwwfHx8fDE3MjQzMzY4OTB8MA&ixlib=rb-4.1.0&q=80&w=1080"
-                alt="A diverse group of healthcare professionals standing together in a modern hospital hallway."
+                src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtZWRpY2F0aW9ufGVufDB8fHx8MTcyMjI4MjAwNnww&ixlib.rb-4.1.0&q=80&w=1080"
+                alt="A collection of various medications including pills, capsules, and syrups, representing comprehensive medication management."
                 width={1080}
                 height={720}
                 className="rounded-lg object-cover w-full h-auto"
-                data-ai-hint="healthcare team"
+                data-ai-hint="pills tablets"
             />
         </div>
       </section>
