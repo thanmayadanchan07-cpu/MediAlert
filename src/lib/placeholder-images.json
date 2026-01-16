@@ -38,9 +38,9 @@
     },
     {
       "id": "about-medications",
-      "description": "A variety of colorful pills and capsules scattered on a white surface.",
-      "imageUrl": "https://images.unsplash.com/photo-1584118624012-df056819fbd8?q=80&w=1080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wzNDE5ODJ8MHwxfHNlYXJjaHwxfHxzY2F0dGVyZWQlMjBwaWxsc3xlbnwwfHx8fDE3MjY4NzQwMDB8MA",
-      "imageHint": "scattered pills"
+      "description": "A person holding a handful of colorful pills.",
+      "imageUrl": "https://images.unsplash.com/photo-1587854692152-cbe660dbde88?q=80&w=1080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wzNDE5ODJ8MHwxfHNlYXJjaHw1fHxtZWRpY2luZSUyMHBpbGxzfGVufDB8fHx8fDE3MjcwMTk3ODJ8MA",
+      "imageHint": "pills medicine"
     },
     {
       "id": "about-reminder",
