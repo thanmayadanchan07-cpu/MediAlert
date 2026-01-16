@@ -32,9 +32,9 @@
     },
     {
       "id": "about-team",
-      "description": "A diverse group of healthcare professionals standing together in a modern hospital hallway.",
-      "imageUrl": "https://images.unsplash.com/photo-1576091160550-2173dba999ef?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxoZWFsdGhjYXJlJTIwdGVhbXxlbnwwfHx8fDE3MjQzMzY4OTB8MA&ixlib.rb-4.1.0&q=80&w=1080",
-      "imageHint": "healthcare team"
+      "description": "A group of diverse people putting their hands together in the middle, symbolizing teamwork and success.",
+      "imageUrl": "https://images.unsplash.com/photo-1531545514256-b1400bc00f31?q=80&w=1080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wzNDE5ODJ8MHwxfHNlYXJjaHw0fHx0ZWFtd29ya3xlbnwwfHx8fDE3MjYwNTU5OTZ8MA",
+      "imageHint": "teamwork success"
     },
     {
       "id": "about-medications",
