@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect, useRef, useCallback } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
@@ -75,6 +75,88 @@ export default function SmartRefillPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<RefillItem | null>(null);
+
+  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
+
+  useEffect(() => {
+    // This is necessary for browsers that require user interaction to start audio.
+    const initializeAudio = () => {
+      if (!audioContext) {
+        setAudioContext(new (window.AudioContext || (window as any).webkitAudioContext)());
+      }
+      window.removeEventListener('click', initializeAudio);
+    };
+    
+    window.addEventListener('click', initializeAudio);
+
+    return () => {
+      window.removeEventListener('click', initializeAudio);
+    }
+  }, [audioContext]);
+  
+  const playBeep = useCallback(() => {
+    if (!audioContext) return;
+    try {
+      if (audioContext.state === 'suspended') {
+        audioContext.resume();
+      }
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+  
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+  
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(440, audioContext.currentTime); // Hz
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+  
+      oscillator.start();
+      oscillator.stop(audioContext.currentTime + 0.15); // Beep for 0.15 seconds
+    } catch (e) {
+      console.error("Audio playback failed:", e);
+    }
+  }, [audioContext]);
+
+  const previousRefillItems = useRef<RefillItem[] | null>(null);
+  
+  useEffect(() => {
+    if (itemsLoading || !refillItems) {
+      return;
+    }
+
+    if (previousRefillItems.current !== null) { // Only run if we have a previous state
+      const newlyLowStockItems = refillItems.filter(item => {
+        const percentage = item.totalQuantity > 0 ? (item.remainingQuantity / item.totalQuantity) : 0;
+        
+        if (percentage > LOW_STOCK_THRESHOLD) {
+          return false;
+        }
+
+        const prevItem = previousRefillItems.current?.find(p => p.id === item.id);
+        
+        if (!prevItem) {
+          return true; // A new item was added and it's already low stock.
+        }
+
+        const prevPercentage = prevItem.totalQuantity > 0 ? (prevItem.remainingQuantity / prevItem.totalQuantity) : 0;
+        
+        // If it was not low stock before, but is now, then it's newly low stock.
+        return prevPercentage > LOW_STOCK_THRESHOLD;
+      });
+
+      if (newlyLowStockItems.length > 0) {
+        playBeep();
+        toast({
+            title: 'Low Stock Alert',
+            description: `${newlyLowStockItems.map(i => i.name).join(', ')} ${newlyLowStockItems.length > 1 ? 'are' : 'is'} running low.`,
+            variant: 'destructive',
+        });
+      }
+    }
+
+    // Update previous items for the next render.
+    previousRefillItems.current = refillItems;
+  }, [refillItems, itemsLoading, playBeep, toast]);
 
   const refillForm = useForm<z.infer<typeof refillSchema>>({
     resolver: zodResolver(refillSchema),
@@ -278,3 +360,4 @@ export default function SmartRefillPage() {
     
 
     
+
