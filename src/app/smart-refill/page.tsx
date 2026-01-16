@@ -45,7 +45,7 @@ const suggestionSchema = z.object({
   location: z.string().min(1, 'Your location is required.'),
 });
 
-const refillIllustration = PlaceHolderImages.find(img => img.id === 'refill-illustration');
+const refillIllustration = PlaceHolderImages.find(img => img.id === 'about-medications');
 
 const LOW_STOCK_THRESHOLD = 0.2; // 20%
 
@@ -303,6 +303,7 @@ export default function SmartRefillPage() {
     </div>
   );
 }
+    
 
     
 
