@@ -38,9 +38,9 @@
     },
     {
       "id": "about-medications",
-      "description": "A collection of various medications including pills, capsules, and syrups, representing comprehensive medication management.",
-      "imageUrl": "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtZWRpY2F0aW9ufGVufDB8fHx8MTcyMjI4MjAwNnww&ixlib.rb-4.1.0&q=80&w=1080",
-      "imageHint": "pills tablets"
+      "description": "A variety of colorful pills and capsules scattered on a surface, representing medication management.",
+      "imageUrl": "https://images.unsplash.com/photo-1563213126-a4273aed2026?q=80&w=1080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wzNDE5ODJ8MHwxfHNlYXJjaHw0fHxzY2F0dGVyZWQlMjBwaWxsc3xlbnwwfHx8fDE3MjYzMTI4ODZ8MA",
+      "imageHint": "scattered pills"
     },
     {
       "id": "about-reminder",
