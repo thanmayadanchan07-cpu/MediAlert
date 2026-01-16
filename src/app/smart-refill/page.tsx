@@ -5,7 +5,7 @@ import { useMemo, useState } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -15,9 +15,8 @@ import * as z from 'zod';
 import Image from 'next/image';
 import { addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase';
 import type { RefillItem } from '@/lib/firebase/firestore';
-import { getPersonalizedRefillSuggestion, type PersonalizedRefillSuggestionOutput } from '@/ai/flows/personalized-refill-suggestions';
 import { useToast } from '@/hooks/use-toast';
-import { PlusCircle, Box, Trash2, Edit, Loader2, PackageSearch, Package, ExternalLink, Sparkles } from 'lucide-react';
+import { PlusCircle, Box, Trash2, Edit, Loader2, Package, ExternalLink, ShoppingBag } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -40,14 +39,28 @@ const refillSchema = z.object({
   remainingQuantity: z.coerce.number().min(0, 'Remaining quantity cannot be negative.'),
 });
 
-const suggestionSchema = z.object({
-  medication: z.string().min(1, 'Medication name is required.'),
-  location: z.string().min(1, 'Your location is required.'),
-});
-
 const refillIllustration = PlaceHolderImages.find(img => img.id === 'about-medications');
 
 const LOW_STOCK_THRESHOLD = 0.2; // 20%
+
+const onlinePharmacies = [
+    {
+        name: 'Amazon Pharmacy',
+        description: 'Conveniently order and manage your prescriptions online.',
+        url: 'https://pharmacy.amazon.com/',
+    },
+    {
+        name: 'CVS Pharmacy',
+        description: 'Refill prescriptions and shop for health products.',
+        url: 'https://www.cvs.com/pharmacy',
+    },
+    {
+        name: 'Walgreens',
+        description: 'Your go-to for pharmacy, health & wellness products.',
+        url: 'https://www.walgreens.com/pharmacy',
+    }
+];
+
 
 export default function SmartRefillPage() {
   const { user, isUserLoading } = useUser();
@@ -62,18 +75,10 @@ export default function SmartRefillPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<RefillItem | null>(null);
-  
-  const [suggestion, setSuggestion] = useState<PersonalizedRefillSuggestionOutput | null>(null);
-  const [isSuggesting, setIsSuggesting] = useState(false);
 
   const refillForm = useForm<z.infer<typeof refillSchema>>({
     resolver: zodResolver(refillSchema),
     defaultValues: { name: '', totalQuantity: 10, remainingQuantity: 10 },
-  });
-
-  const suggestionForm = useForm<z.infer<typeof suggestionSchema>>({
-    resolver: zodResolver(suggestionSchema),
-    defaultValues: { medication: '', location: '' },
   });
 
   const handleDialogOpen = (item: RefillItem | null = null) => {
@@ -111,19 +116,6 @@ export default function SmartRefillPage() {
       toast({ title: 'Item removed', description: 'The item has been deleted from your inventory.' });
     } catch {
       toast({ title: 'Error', description: 'Could not delete the item.', variant: 'destructive' });
-    }
-  };
-
-  const onSuggestionSubmit = async (values: z.infer<typeof suggestionSchema>) => {
-    setIsSuggesting(true);
-    setSuggestion(null);
-    try {
-      const result = await getPersonalizedRefillSuggestion(values);
-      setSuggestion(result);
-    } catch (error) {
-      toast({ title: 'Suggestion Error', description: 'Could not get a suggestion at this time.', variant: 'destructive' });
-    } finally {
-      setIsSuggesting(false);
     }
   };
 
@@ -254,51 +246,29 @@ export default function SmartRefillPage() {
       <div>
         <div className="mb-8">
             <h2 className="font-headline text-3xl md:text-4xl font-bold flex items-center gap-3">
-                <Sparkles className="w-8 h-8 text-primary" /> Personalized Refill Suggestion
+                <ShoppingBag className="w-8 h-8 text-primary" /> Online Pharmacies
             </h2>
-            <p className="text-muted-foreground mt-2 text-lg">Let AI find the best deal for your medication.</p>
+            <p className="text-muted-foreground mt-2 text-lg">Order your medication from trusted online retailers.</p>
         </div>
-        <Card>
-            <CardContent className="p-6">
-                 <Form {...suggestionForm}>
-                    <form onSubmit={suggestionForm.handleSubmit(onSuggestionSubmit)} className="grid md:grid-cols-3 gap-4 items-end">
-                        <FormField control={suggestionForm.control} name="medication" render={({ field }) => (<FormItem><FormLabel>Medication</FormLabel><FormControl><Input placeholder="Enter medicine name" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                        <FormField control={suggestionForm.control} name="location" render={({ field }) => (<FormItem><FormLabel>Your Location</FormLabel><FormControl><Input placeholder="e.g., City, State" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                        <Button type="submit" disabled={isSuggesting || !user}>{isSuggesting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Find Best Price</Button>
-                    </form>
-                    {!user && <p className="text-sm text-destructive mt-2">Please log in to use this feature.</p>}
-                 </Form>
-            </CardContent>
-        </Card>
-        
-        {isSuggesting && <div className="text-center py-8"><Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" /></div>}
-        
-        {suggestion && (
-            <Card className="mt-6 bg-accent/20 border-accent">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-3 font-headline"><PackageSearch className="w-7 h-7" /> AI Suggestion</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div>
-                        <p className="text-sm font-bold text-muted-foreground">RETAILER</p>
-                        <p className="text-xl font-bold text-primary">{suggestion.retailer}</p>
-                    </div>
-                    <div>
-                        <p className="text-sm font-bold text-muted-foreground">PRICE</p>
-                        <p className="text-2xl font-extrabold">${suggestion.price.toFixed(2)}</p>
-                    </div>
-                     <div>
-                        <p className="text-sm font-bold text-muted-foreground">REASON</p>
-                        <p className="text-base">{suggestion.reason}</p>
-                    </div>
-                    <Button asChild>
-                        <a href={suggestion.url} target="_blank" rel="noopener noreferrer">
-                            Purchase Now <ExternalLink className="ml-2 h-4 w-4" />
-                        </a>
-                    </Button>
-                </CardContent>
-            </Card>
-        )}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {onlinePharmacies.map((pharmacy) => (
+                <Card key={pharmacy.name} className="flex flex-col">
+                    <CardHeader>
+                        <CardTitle>{pharmacy.name}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex-grow">
+                        <p className="text-muted-foreground">{pharmacy.description}</p>
+                    </CardContent>
+                    <CardFooter>
+                        <Button asChild>
+                            <a href={pharmacy.url} target="_blank" rel="noopener noreferrer">
+                                Visit Site <ExternalLink className="ml-2 h-4 w-4" />
+                            </a>
+                        </Button>
+                    </CardFooter>
+                </Card>
+            ))}
+        </div>
       </div>
     </div>
   );
