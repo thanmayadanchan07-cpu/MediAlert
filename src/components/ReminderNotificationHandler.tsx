@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, deleteDoc, doc } from 'firebase/firestore';
-import type { Reminder } from '@/lib/firebase/firestore';
+import { collection, deleteDoc, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
+import type { Reminder, RefillItem } from '@/lib/firebase/firestore';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -14,6 +14,23 @@ import {
   AlertDialogAction,
 } from '@/components/ui/alert-dialog';
 import { BellRing } from 'lucide-react';
+
+const parseQuantity = (quantity: string): number => {
+  if (typeof quantity !== 'string') return 0;
+  if (quantity.includes('/')) {
+      const parts = quantity.split('/');
+      if (parts.length === 2) {
+          const numerator = parseFloat(parts[0]);
+          const denominator = parseFloat(parts[1]);
+          if (!isNaN(numerator) && !isNaN(denominator) && denominator !== 0) {
+              return numerator / denominator;
+          }
+      }
+  }
+  const num = parseFloat(quantity);
+  return isNaN(num) ? 0 : num;
+};
+
 
 export function ReminderNotificationHandler() {
   const { user } = useUser();
@@ -111,11 +128,31 @@ export function ReminderNotificationHandler() {
   const handleDismiss = async () => {
     if (!dueReminder || !user) return;
     
-    // Optimistically close dialog
     const dismissedReminder = dueReminder;
     setDueReminder(null);
 
     // Note: Beeping stops automatically due to the useEffect cleanup
+    
+    // Update inventory
+    try {
+        const refillItemsRef = collection(firestore, 'users', user.uid, 'refills');
+        const q = query(refillItemsRef, where('name', '==', dismissedReminder.medicineName));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            const refillDoc = querySnapshot.docs[0];
+            const refillItem = refillDoc.data() as RefillItem;
+            const quantityToDecrement = parseQuantity(dismissedReminder.quantity);
+
+            if (quantityToDecrement > 0 && refillItem.remainingQuantity >= quantityToDecrement) {
+                const newQuantity = refillItem.remainingQuantity - quantityToDecrement;
+                await updateDoc(refillDoc.ref, { remainingQuantity: newQuantity });
+            }
+        }
+    } catch (error) {
+        console.error("Failed to update refill item:", error);
+    }
+
 
     // Delete from Firestore
     try {
@@ -125,7 +162,6 @@ export function ReminderNotificationHandler() {
         }
     } catch (error) {
         console.error("Failed to delete reminder:", error);
-        // Optional: handle error, e.g., show a toast
     }
   };
 
